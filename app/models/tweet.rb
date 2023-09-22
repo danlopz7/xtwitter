@@ -9,7 +9,7 @@ class Tweet < ApplicationRecord
   has_many :bookmarks
   has_many :likes
 
-  has_and_belongs_to_many :hashtags
+  has_and_belongs_to_many :hashtags, join_table: 'hashtags_tweets'
   #Esta relación permite que un tweet pueda tener múltiples hashtags, y a su vez, un hashtag puede estar asociado con varios tweets.
   #Cuando se utiliza esta relación, Rails espera que exista una tabla intermedia en la base de datos 
   #que vincule los registros de los dos modelos.
