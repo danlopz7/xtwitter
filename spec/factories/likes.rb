@@ -1,6 +1,5 @@
 FactoryBot.define do
-  factory :reply do
-    content { "MyString" }
+  factory :like do
     user { nil }
     tweet { nil }
   end
