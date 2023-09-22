@@ -1,4 +1,7 @@
 class User < ApplicationRecord
+
+    PASSWORD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])/
+
     has_many :tweets
     has_many :bookmarks
     has_many :likes
@@ -12,9 +15,8 @@ class User < ApplicationRecord
     validates :email, presence: true, uniqueness: true
     validates :username, presence: true, uniqueness: true
     validates :password, presence: true, length: { minimum: 12 }
-    #validates :password, format: { with: ^/\A(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@/*-+_])/}
-    #, message: 'must include at least 
-    #1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character like !@/*-+_'}
+    validates :password, format: { with: PASSWORD_REGEX, message: "must include at least 
+    1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character like !@/*-+_"}
 
     # Method to check if the user has retweeted a tweet
     def has_retweeted?(tweet)
@@ -26,6 +28,7 @@ class User < ApplicationRecord
         liked_tweets.exists?(tweet.id)
     end
 
+    #Scopes
     # Scope to retrieve tweets of a user
     scope :user_tweets, ->(user_id) { joins(:tweets).where(tweets: { user_id: user_id }) }
 
@@ -33,7 +36,7 @@ class User < ApplicationRecord
     scope :user_tweets_and_replies, ->(user_id) do
         joins(:tweets, :replies)
             .where("tweets.user_id = ? OR replies.user_id = ?", user_id, user_id)
-            .distinct
+           .distinct
     end
 
     # Scope to retrieve the number of followers a user has

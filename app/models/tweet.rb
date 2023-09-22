@@ -7,17 +7,8 @@ class Tweet < ApplicationRecord
   has_many :bookmarks
   has_many :likes
   
-  has_and_belongs_to_many :hashtags, join_table: 'hashtags_tweets'
-  #Esta relación permite que un tweet pueda tener múltiples hashtags, y a su vez, un hashtag puede estar asociado con varios tweets.
-  #Cuando se utiliza esta relación, Rails espera que exista una tabla intermedia en la base de datos 
-  #que vincule los registros de los dos modelos.
-  #En el contexto de esta relación, se espera que haya una tabla intermedia llamada "tweets_hashtags" 
-  #(por convención, Rails utiliza el nombre de ambos modelos en orden alfabético y en plural para nombrar 
-  #la tabla intermedia). Esta tabla debe tener dos columnas: "tweet_id" y "hashtag_id". La columna "tweet_id" 
-  #almacena el ID del tweet y la columna "hashtag_id" almacena el ID del hashtag asociado. Cuando se llama 
-  # a has_and_belongs_to_many :hashtags, Rails automáticamente configura la relación de muchos a muchos y 
-  #permite que puedas agregar y recuperar hashtags asociados a un tweet de manera sencilla
-
+  has_and_belongs_to_many :hashtags # join_table: 'hashtags_tweets'
+  
   # Method for retweeting
   def retweet(user)
     # Check if the user hasn't already retweeted this tweet
@@ -51,6 +42,18 @@ class Tweet < ApplicationRecord
     # Crear un nuevo tweet con el usuario actual como autor y el tweet original como cita
     quote = Tweet.new(user_id: user.id, quote_id: id, content: text_body)
     quote.save ? quote : nil
+  end
+
+  # Method to create hashtags from tweet content
+  def create_hashtags_from_content
+    return unless content.present?
+
+    hashtag_texts = content.scan(/#\w+/) # Busca palabras que comiencen con '#'
+    
+    hashtag_texts.each do |text|
+      hashtag = Hashtag.find_or_create_by(name: text[1..-1]) # Elimina el '#' del texto
+      hashtags << hashtag unless hashtags.include?(hashtag)
+    end
   end
 
   validates :content, presence: true, length: { maximum: 255 }, if: -> { tweet_or_quote? }
