@@ -7,6 +7,7 @@ class User < ApplicationRecord
     validates :email, presence: true, uniqueness: true
     validates :username, presence: true, uniqueness: true
     validates :password, presence: true, length: { minimum: 12 }
-    validates :password, format: { with: /\A(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@/*-+_])/, message: 'must include at least 
-    1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character like !@/*-+_'}
+    #validates :password, format: { with: ^/\A(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@/*-+_])/}
+    #, message: 'must include at least 
+    #1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character like !@/*-+_'}
 end
