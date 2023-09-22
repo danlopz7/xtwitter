@@ -26,4 +26,7 @@ class Tweet < ApplicationRecord
     retweet_id.nil?
   end
 
+  # Scope to retrieve the number of retweets
+  scope :retweets_count, ->(tweet_id) { where(retweet_id: tweet_id).count }
+
 end
