@@ -1,22 +1,63 @@
 class User < ApplicationRecord
 
-  # Relación para los tweets creados por el usuario
-  has_many :tweets, dependent: :destroy
-  has_many :bookmarks, dependent: :destroy
-  has_many :likes, dependent: :destroy
+    PASSWORD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])/
 
-  # Relación para los seguidores del usuario
-  has_many :followers, class_name: 'Follow', foreign_key: 'followee_id'
+    has_many :tweets, dependent: :destroy
+    has_many :bookmarks
+    has_many :likes
+    has_many :replies
 
-  # Relación para los usuarios que sigue el usuario
-  has_many :followees, class_name: 'Follow', foreign_key: 'follower_id'
-  
-  #validation for presence and uniqueness for email and username
-  validates :email, :username, presence: true, uniqueness: true
+    has_many :followers, foreign_key: :followee_id, class_name: 'Follow', dependent: :destroy
+    # Asociación para obtener usuarios seguidores directamente
+    has_many :follower_users, through: :followers, source: :follower
 
-  #validates presence for password
-  validates :password, presence: true
+    
+    has_many :followings, foreign_key: :follower_id, class_name: 'Follow', dependent: :destroy
 
-  #validates password for presence, format and length minimum of 12 chars
-  validates :password, presence: true, format: { with: ^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@/*\-+_]).*$}, length: { minimum: 12 }
+    has_many :retweets, class_name: 'Tweet', foreign_key: 'user_id'
+    has_many :liked_tweets, through: :likes, source: :tweet
+
+    validates :email, presence: true, uniqueness: true
+    validates :username, presence: true, uniqueness: true
+    validates :password, presence: true, length: { minimum: 12 }
+    validates :password, format: { with: PASSWORD_REGEX, message: "must include at least 
+    1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character like !@/*-+_"}
+
+    # Method to check if the user has retweeted a tweet
+    def has_retweeted?(tweet)
+        retweets.exists?(retweet_id: tweet.id)
+    end
+
+    # Method to check if the user has liked a tweet
+    def has_liked?(tweet)
+        liked_tweets.exists?(tweet.id)
+    end
+
+    #Scopes
+    # Scope to retrieve tweets of a user
+    scope :user_tweets, ->(user_id) { joins(:tweets).where(tweets: { user_id: user_id }) }
+
+    # Scope to retrieve tweets and replies of a user
+    scope :user_tweets_and_replies, ->(user_id) do
+        joins(:tweets, :replies)
+            .where("tweets.user_id = ? OR replies.user_id = ?", user_id, user_id)
+           .distinct
+    end
+
+    # Scope to retrieve the number of followers a user has
+    scope :followers_count, ->(user_id) do
+        joins(:followers).where(followers: { followee_id: user_id }).count
+    end
+
+    # Scope to retrieve the number of users a user follows
+    scope :following_count, ->(user_id) do
+        joins(:following).where(following: { follower_id: user_id }).count
+    end
+
+    # Scope that retrieves the bookmarked tweets by a user
+    scope :bookmarked_tweets, ->(user_id) do
+        joins(:bookmarks)
+        .joins("INNER JOIN tweets ON bookmarks.tweet_id = tweets.id")
+        .where(bookmarks: { user_id: user_id })
+    end
 end

@@ -1,9 +1,19 @@
 class Follow < ApplicationRecord
-  # Relación para el usuario que sigue a otro usuario
-  belongs_to :follower, class_name: 'User'
+    
+    # the user that follows someone
+    belongs_to :follower, class_name: 'User'
 
-  # Relación para el usuario seguido por otro usuario
-  belongs_to :followee, class_name: 'User'
+    # the user that is being followed
+    belongs_to :followee, class_name: 'User'
 
-  validates :followee_id, :follower_id, uniqueness: true
+    # para una relación belongs_to llamada follower, Rails asumirá que la clave foránea es 
+    #"follower_id" en lugar de requerir que lo especifique explícitamente.
+    # Rails asume convenciones por defecto para las claves foráneas
+
+    # Validations
+    validates :follower_id, uniqueness: { scope: :followee_id }
+
+    # Association Validations
+    validates_associated :follower, :followee
 end
+ 

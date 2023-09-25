@@ -1,29 +1,71 @@
 class Tweet < ApplicationRecord
-  belongs_to :user, class_name: 'User'
+  belongs_to :user
 
-  # Relación para el tweet citado (quote) si es una cita
-  has_many :quoted_tweet, class_name: 'Tweet', foreign_key: 'quote_id'
-
-  # Relación para los retweets del tweet
   has_many :retweets, class_name: 'Tweet', foreign_key: 'retweet_id'
-
-  # Relación para los Replies (respuestas) a un tweet
-  has_many :replies, class_name: 'Reply', foreign_key: 'tweet_id', dependent: :destroy
-
-  has_many :taggings
+  has_many :quote_tweets, class_name: 'Tweet', foreign_key: 'quote_id'
+  has_many :replies, class_name: 'Reply', foreign_key: 'tweet_id'
+  has_many :bookmarks
   has_many :likes
-
-  validates :content, presence: true, length: { maximum: 255 }, unless: -> { retweet? }
-
-  private
-  def retweet?
-    !retweet_id.nil?
+  
+  has_and_belongs_to_many :hashtags
+  
+  # Method for retweeting
+  def retweet(user)
+    # Check if the user hasn't already retweeted this tweet
+    unless user.has_retweeted?(self)
+      # Create a new retweet associated with the user
+      retweet = Tweet.new(user_id: user.id, retweet_id: id)
+      if retweet.save
+        return true # Retweet successful
+      end
+    end
+    false # Retweet unsuccessful (e.g., user already retweeted)
   end
 
-  # unless: -> { retweet? } especifica que estas validaciones solo se aplican si el método retweet? 
-  # devuelve false, lo que significa que el tweet no es un retweet. Si es un retweet, las validaciones se omiten.
+  # Method for liking a tweet
+  def like(user)
+    # Check if the user hasn't already liked this tweet
+    unless user.has_liked?(self)
+      # Create a new like associated with the user
+      like = Like.new(user_id: user.id, tweet_id: id)
+      if like.save
+        return true # Like successful
+      end
+    end
+    false # Like unsuccessful (e.g., user already liked the tweet)
+  end
 
-  validates_associated :replies
-  validates_associated :likes
-  #validates_associated :hashtags
+  # Method for quoting a tweet
+  def quote_tweet(user, text_body)
+    return nil if text_body.blank? # No se permite una cita de tweet vacía
+
+    # Crear un nuevo tweet con el usuario actual como autor y el tweet original como cita
+    quote = Tweet.new(user_id: user.id, quote_id: id, content: text_body)
+    quote.save ? quote : nil
+  end
+
+  # Method to create hashtags from tweet content
+  def create_hashtags_from_content
+    return unless content.present?
+
+    hashtag_texts = content.scan(/#\w+/) # Busca palabras que comiencen con '#'
+    
+    hashtag_texts.each do |text|
+      hashtag = Hashtag.find_or_create_by(name: text[1..-1]) # Elimina el '#' del texto
+      hashtags << hashtag unless hashtags.include?(hashtag)
+    end
+  end
+
+  validates :content, presence: true, length: { maximum: 255 }, if: -> { tweet_or_quote? }
+
+  # Scope to retrieve the number of retweets
+  scope :retweets_count, ->(tweet_id) { where(retweet_id: tweet_id).count }
+  
+  # Scope to retrieve the number of retweets
+  scope :quotes_count, ->(tweet_id) { where(quote_id: tweet_id).count }
+
+  def tweet_or_quote?
+    retweet_id.nil?
+  end
+
 end

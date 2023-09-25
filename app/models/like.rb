@@ -1,6 +1,10 @@
 class Like < ApplicationRecord
-    belongs_to :user, class_name: 'User'
-    belongs_to :tweet, class_name: 'Tweet'
+  belongs_to :user
+  belongs_to :tweet
 
-    validates :tweet_id, :user_id, uniqueness: true
+  # Validations
+  validates :tweet_id, uniqueness: { scope: :user_id }
+
+  # Association Validations
+  validates_associated :user, :tweet
 end
