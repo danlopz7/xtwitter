@@ -8,12 +8,8 @@ class User < ApplicationRecord
     has_many :replies
 
     has_many :followers, foreign_key: :followee_id, class_name: 'Follow', dependent: :destroy
-    # Asociación para obtener usuarios seguidores directamente
-    has_many :follower_users, through: :followers, source: :follower
-
-    
     has_many :followings, foreign_key: :follower_id, class_name: 'Follow', dependent: :destroy
-
+    
     has_many :retweets, class_name: 'Tweet', foreign_key: 'user_id'
     has_many :liked_tweets, through: :likes, source: :tweet
 

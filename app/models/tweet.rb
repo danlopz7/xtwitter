@@ -1,8 +1,8 @@
 class Tweet < ApplicationRecord
   belongs_to :user
 
-  has_many :retweets, class_name: 'Tweet', foreign_key: 'retweet_id'
-  has_many :quote_tweets, class_name: 'Tweet', foreign_key: 'quote_id'
+  has_many :retweets, class_name: 'Tweet', foreign_key: 'retweet_id', dependent: :destroy
+  has_many :quote_tweets, class_name: 'Tweet', foreign_key: 'quote_id', dependent: :destroy
   has_many :replies, class_name: 'Reply', foreign_key: 'tweet_id'
   has_many :bookmarks
   has_many :likes
