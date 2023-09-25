@@ -7,7 +7,7 @@ class Tweet < ApplicationRecord
   has_many :bookmarks
   has_many :likes
   
-  has_and_belongs_to_many :hashtags # join_table: 'hashtags_tweets'
+  has_and_belongs_to_many :hashtags
   
   # Method for retweeting
   def retweet(user)

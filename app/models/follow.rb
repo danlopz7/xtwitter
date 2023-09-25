@@ -1,5 +1,9 @@
 class Follow < ApplicationRecord
+    
+    # the user that follows someone
     belongs_to :follower, class_name: 'User'
+
+    # the user that is being followed
     belongs_to :followee, class_name: 'User'
 
     # para una relación belongs_to llamada follower, Rails asumirá que la clave foránea es 
