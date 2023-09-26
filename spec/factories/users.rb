@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :user do
-    name { "MyString" }
-    lastname { "MyString" }
-    username { "MyString" }
-    email { "MyString" }
-    pasword { "MyString" }
+    name { Faker::Name.first_name.downcase }
+    lastname { Faker::Name.last_name}
+    username { Faker::Internet.username(specifier: "#{name}_#{lastname}", separators: %w(. _ -)) }
+    email { Faker::Internet.email(name: "#{name} #{lastname}", separators: ['-'], domain: 'test')}
+    pasword { "Password123!" }
   end
 end
