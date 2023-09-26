@@ -4,9 +4,15 @@ class Tweet < ApplicationRecord
   has_many :retweets, class_name: 'Tweet', foreign_key: 'retweet_id', dependent: :destroy
   has_many :quote_tweets, class_name: 'Tweet', foreign_key: 'quote_id', dependent: :destroy
   has_many :replies, class_name: 'Reply', foreign_key: 'tweet_id'
-  has_many :bookmarks
-  has_many :likes
+
+  has_many :bookmarks, dependent: :destroy
+  has_many :bookmarkers, through: :bookmarks, source: :user
+
+  has_many :likes, dependent: :destroy
+  has_many :likers, through: :likes, source: :user
   
+  belongs_to :original_retweet, class_name: 'Tweet', optional: true
+  belongs_to :original_quote, class_name: 'Tweet', optional: true
   has_and_belongs_to_many :hashtags
   
   # Method for retweeting
@@ -61,11 +67,11 @@ class Tweet < ApplicationRecord
   # Scope to retrieve the number of retweets
   scope :retweets_count, ->(tweet_id) { where(retweet_id: tweet_id).count }
   
-  # Scope to retrieve the number of retweets
+  # Scope to retrieve the number of quotes
   scope :quotes_count, ->(tweet_id) { where(quote_id: tweet_id).count }
 
   def tweet_or_quote?
-    retweet_id.nil?
+    retweet_id.nil? && quote_id.nil?
   end
 
 end

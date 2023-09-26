@@ -3,20 +3,22 @@ class User < ApplicationRecord
     PASSWORD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])/
 
     has_many :tweets, dependent: :destroy
-    has_many :bookmarks
-    has_many :likes
-    has_many :replies
+    has_many :bookmarks, dependent: :destroy
+    has_many :likes, dependent: :destroy
+    has_many :liked_tweets, through: :likes, source: :tweet
+    has_many :replies, dependent: :destroy
 
-    has_many :followers, foreign_key: :followee_id, class_name: 'Follow', dependent: :destroy
-    has_many :followings, foreign_key: :follower_id, class_name: 'Follow', dependent: :destroy
+    has_many :following_relations, class_name: 'Follow', foreign_key: 'follower_id', dependent: :destroy
+    has_many :followees, through: :following_relations, source: :followee
+
+    has_many :follower_relations, class_name: 'Follow', foreign_key: 'followee_id', dependent: :destroy
+    has_many :followers, through: :follower_relations, source: :follower
     
     has_many :retweets, class_name: 'Tweet', foreign_key: 'user_id'
-    has_many :liked_tweets, through: :likes, source: :tweet
 
     validates :email, presence: true, uniqueness: true
     validates :username, presence: true, uniqueness: true
-    validates :password, presence: true, length: { minimum: 12 }
-    validates :password, format: { with: PASSWORD_REGEX, message: "must include at least 
+    validates :password, presence: true, length: { minimum: 12 }, format: { with: PASSWORD_REGEX, message: "must include at least 
     1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character like !@/*-+_"}
 
     # Method to check if the user has retweeted a tweet
