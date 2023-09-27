@@ -16,6 +16,13 @@ class Tweet < ApplicationRecord
   has_many :replies, class_name: 'Reply', foreign_key: 'tweet_id'
   has_and_belongs_to_many :hashtags
   
+  validates :user, presence: true
+  validates :content, presence: true, length: { maximum: 255 }, if: -> { tweet_or_quote? }
+
+  def tweet_or_quote?
+    retweet_id.nil? || quote_id.present?
+  end
+
   # Method for retweeting
   def retweet(user)
     # Check if the user hasn't already retweeted this tweet
@@ -26,9 +33,17 @@ class Tweet < ApplicationRecord
         return true # Retweet successful
       end
     end
-    false # Retweet unsuccessful (e.g., user already retweeted)
+    false # Retweet unsuccessful (e.g., user alresady retweeted)
   end
   
+  # Method for quoting a tweet
+  def quote_tweet(user, text_body)
+    return nil if text_body.blank? # No se permite una cita de tweet vacía
+
+    # Crear un nuevo tweet con el usuario actual como autor y el tweet original como cita
+    quote = Tweet.new(user_id: user.id, quote_id: id, content: text_body)
+    quote.save ? quote : nil
+  end
 
   # Method for liking a tweet
   def like(user)
@@ -43,17 +58,6 @@ class Tweet < ApplicationRecord
     false # Like unsuccessful (e.g., user already liked the tweet)
   end
 
-
-  # Method for quoting a tweet
-  def quote_tweet(user, text_body)
-    return nil if text_body.blank? # No se permite una cita de tweet vacía
-
-    # Crear un nuevo tweet con el usuario actual como autor y el tweet original como cita
-    quote = Tweet.new(user_id: user.id, quote_id: id, content: text_body)
-    quote.save ? quote : nil
-  end
-
-
   # Method to create hashtags from tweet content
   def create_hashtags_from_content
     return unless content.present?
@@ -65,8 +69,6 @@ class Tweet < ApplicationRecord
       hashtags << hashtag unless hashtags.include?(hashtag)
     end
   end
-
-  validates :content, presence: true, length: { maximum: 255 }, if: -> { tweet_or_quote? }
 
   # Scope to retrieve tweets of a user
   scope :user_tweets, ->(user_id) { where(user_id: user_id) }
@@ -91,11 +93,6 @@ class Tweet < ApplicationRecord
   # Scope to retrieve bookmarks made by a user
   scope :bookmarked_by_user, ->(user_id) do
     joins(:bookmarks).where(bookmarks: { user_id: user_id })
-  end
-
-
-  def tweet_or_quote?
-    retweet_id.nil?
   end
 
 end

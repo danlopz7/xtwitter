@@ -9,5 +9,5 @@ class Bookmark < ApplicationRecord
   validates_associated :user, :tweet
 
   # Scope to retrieve bookmarks made by a user
-  scope :by_user, ->(user_id) { where(user_id: user_id) }
+  scope :user_bookmarks, ->(user_id) { where(user_id: user_id) }
 end
