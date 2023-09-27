@@ -33,7 +33,7 @@ class User < ApplicationRecord
 
     #Scopes
     # Scope to retrieve tweets of a user
-    scope :user_tweets, ->(user_id) { joins(:tweets).where(tweets: { user_id: user_id }) }
+    scope :user_tweets, ->(user_id) { joins(:tweets).where(tweets: { user_id: user_id }).select("tweets.*") }
 
     # Scope to retrieve tweets and replies of a user
     scope :user_tweets_and_replies, ->(user_id) do
