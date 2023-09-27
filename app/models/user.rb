@@ -16,8 +16,8 @@ class User < ApplicationRecord
     has_many :bookmarks, dependent: :destroy
     has_many :replies, dependent: :destroy
 
-    validates :email, presence: true, uniqueness: true
-    validates :username, presence: true, uniqueness: true
+    validates :email, presence: true, uniqueness: { case_sensitive: false }
+    validates :username, presence: true, uniqueness: { case_sensitive: false }
     validates :password, presence: true, length: { minimum: 12 }, format: { with: PASSWORD_REGEX, message: "must include at least 
     1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character like !@/*-+_"}
 
