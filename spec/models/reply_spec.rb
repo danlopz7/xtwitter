@@ -12,13 +12,15 @@ RSpec.describe Reply, type: :model do
   end
 
   # Test para validar la creación de un reply
-  it 'is valid with valid attributes' do
-    reply = build(:reply)
-    expect(reply).to be_valid
-  end
+  describe 'validate creation of a reply' do
+    it 'is valid with valid attributes' do
+      reply = build(:reply)
+      expect(reply).to be_valid
+    end
 
-  it 'is not valid without content' do
-    reply = build(:reply, content: nil)
-    expect(reply).not_to be_valid
+    it 'is not valid without content' do
+      reply = build(:reply, content: nil)
+      expect(reply).not_to be_valid
+    end
   end
 end
