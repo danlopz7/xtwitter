@@ -66,6 +66,16 @@ class Tweet < ApplicationRecord
 
   validates :content, presence: true, length: { maximum: 255 }, if: -> { tweet_or_quote? }
 
+  # Scope to retrieve tweets of a user
+  scope :user_tweets, ->(user_id) { where(user_id: user_id) }
+
+  # Scope to retrieve the number of users a user follows
+  scope :user_tweets_and_replies, ->(user_id) do
+    joins("LEFT JOIN replies ON tweets.id = replies.tweet_id")
+      .where("tweets.user_id = ? OR replies.user_id = ?", user_id, user_id)
+      .distinct
+  end
+
   # Scope to retrieve the number of retweets
   scope :retweets_count, ->(tweet_id) { where(retweet_id: tweet_id).count }
   
