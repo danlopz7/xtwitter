@@ -34,30 +34,12 @@ class User < ApplicationRecord
     end
 
     #Scopes
-    # Scope to retrieve tweets of a user
-    #scope :user_tweets, ->(user_id) { joins(:tweets).where(tweets: { user_id: user_id }).select("tweets.*") }
-
-    # Scope to retrieve tweets and replies of a user
-    # scope :user_tweets_and_replies, ->(user_id) do
-    #     joins(:tweets, :replies)
-    #         .where("tweets.user_id = ? OR replies.user_id = ?", user_id, user_id)
-    #        .distinct
-    # end
-
     # Scope to retrieve the number of followers a user has
-    # scope :followers_count, ->(user_id) do
-    #     joins(:follower_relations).where(followers: { followee_id: user_id }).count
-    # end
-    #scope :followers_count, ->(user_id) { Follow.where(followee_id: user_id).count}
     scope :followers_count, ->(user_id) do
         joins(:follower_relations).where(follower_relations: { followee_id: user_id }).count
     end
 
     # Scope to retrieve the number of users a user follows
-    # scope :following_count, ->(user_id) do
-    #     joins(:following_relations).where(following: { follower_id: user_id }).count
-    # end
-    #scope :following_count, ->(user_id) { Follow.where(follower_id: user_id).count }
     scope :following_count, ->(user_id) do
         joins(:following_relations).where(following_relations: { follower_id: user_id }).count
     end

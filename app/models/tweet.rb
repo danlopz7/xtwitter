@@ -10,7 +10,7 @@ class Tweet < ApplicationRecord
 
   has_many :likes, dependent: :destroy
   has_many :likers, through: :likes, source: :user
-  
+
   has_many :bookmarks, inverse_of: :tweet
 
   has_many :replies, class_name: 'Reply', foreign_key: 'tweet_id'
@@ -66,9 +66,7 @@ class Tweet < ApplicationRecord
     end
   end
 
-
   validates :content, presence: true, length: { maximum: 255 }, if: -> { tweet_or_quote? }
-
 
   # Scope to retrieve tweets of a user
   scope :user_tweets, ->(user_id) { where(user_id: user_id) }
