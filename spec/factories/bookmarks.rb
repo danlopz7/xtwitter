@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :bookmark do
-    user
-    tweet
+    user { association :user }
+    tweet { association :tweet }
   end
 end

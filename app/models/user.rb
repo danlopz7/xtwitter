@@ -13,7 +13,9 @@ class User < ApplicationRecord
     has_many :likes, dependent: :destroy
     has_many :liked_tweets, through: :likes, source: :tweet
 
-    has_many :bookmarks, dependent: :destroy
+    #has_many :bookmarks, dependent: :destroy
+    has_many :bookmarks, inverse_of: :user
+
     has_many :replies, dependent: :destroy
 
     validates :email, presence: true, uniqueness: { case_sensitive: false }

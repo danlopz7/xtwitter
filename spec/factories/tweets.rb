@@ -19,13 +19,15 @@ FactoryBot.define do
     # subfabrica para un retweet. Cuando quiera un retweet, factoryBot usara esto
     factory :retweet do
       # asociación con otro tweet(el tweet original)
-      association :original_retweet, factory: :tweet
+      #association :original_retweet, factory: :tweet
+      original_retweet { create(:tweet) }
     end
 
     # subfábrica para crear citas de tweets
     factory :quote do
       content { Faker::Lorem.sentence }
-      association :original_quote, factory: :tweet
+      original_quote { create(:tweet) }
+      #association :original_quote, factory: :tweet
     end
   end
 end

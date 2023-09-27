@@ -2,17 +2,16 @@ class Tweet < ApplicationRecord
   belongs_to :user
 
   # Self join references
-  belongs_to :original_retweet, class_name: 'Tweet', optional: true
-  belongs_to :original_quote, class_name: 'Tweet', optional: true
+  belongs_to :original_retweet, class_name: 'Tweet', optional: true, foreign_key: 'retweet_id'
+  belongs_to :original_quote, class_name: 'Tweet', optional: true, foreign_key: 'quote_id'
 
   has_many :retweets, class_name: 'Tweet', foreign_key: 'retweet_id', dependent: :destroy
   has_many :quotes, class_name: 'Tweet', foreign_key: 'quote_id', dependent: :destroy
 
   has_many :likes, dependent: :destroy
   has_many :likers, through: :likes, source: :user
-
-  has_many :bookmarks, dependent: :destroy
-  has_many :bookmarkers, through: :bookmarks, source: :user
+  
+  has_many :bookmarks, inverse_of: :tweet
 
   has_many :replies, class_name: 'Reply', foreign_key: 'tweet_id'
   has_and_belongs_to_many :hashtags
@@ -29,6 +28,7 @@ class Tweet < ApplicationRecord
     end
     false # Retweet unsuccessful (e.g., user already retweeted)
   end
+  
 
   # Method for liking a tweet
   def like(user)
@@ -43,6 +43,7 @@ class Tweet < ApplicationRecord
     false # Like unsuccessful (e.g., user already liked the tweet)
   end
 
+
   # Method for quoting a tweet
   def quote_tweet(user, text_body)
     return nil if text_body.blank? # No se permite una cita de tweet vacía
@@ -51,6 +52,7 @@ class Tweet < ApplicationRecord
     quote = Tweet.new(user_id: user.id, quote_id: id, content: text_body)
     quote.save ? quote : nil
   end
+
 
   # Method to create hashtags from tweet content
   def create_hashtags_from_content
@@ -64,7 +66,9 @@ class Tweet < ApplicationRecord
     end
   end
 
+
   validates :content, presence: true, length: { maximum: 255 }, if: -> { tweet_or_quote? }
+
 
   # Scope to retrieve tweets of a user
   scope :user_tweets, ->(user_id) { where(user_id: user_id) }
@@ -83,7 +87,14 @@ class Tweet < ApplicationRecord
   scope :quotes_count, ->(tweet_id) { where(quote_id: tweet_id).count }
 
   # Scope to retrieve the number of bookmarks
-  scope :bookmarks_count, ->(tweet_id) { Bookmark.where(tweet_id: tweet_id).count }
+  # scope that retrieves the bookmarked tweets by a user
+  #scope :bookmarks_count, ->(tweet_id) { Bookmark.where(tweet_id: tweet_id).count }
+
+  # Scope to retrieve bookmarks made by a user
+  scope :bookmarked_by_user, ->(user_id) do
+    joins(:bookmarks).where(bookmarks: { user_id: user_id })
+  end
+
 
   def tweet_or_quote?
     retweet_id.nil?
