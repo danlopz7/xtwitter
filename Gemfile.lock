@@ -110,6 +110,8 @@ GEM
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
+    json-schema (4.1.1)
+      addressable (>= 2.8)
     loofah (2.21.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -246,6 +248,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   jbuilder
+  json-schema
   pg (~> 1.1)
   puma (~> 5.0)
   rails (~> 7.0.4)
