@@ -17,10 +17,8 @@ Rails.application.routes.draw do
   end
 
   resources :users, only: [] do
-    resources :tweets, only: [:index] to: 'tweets#index' do
-      collection do 
-        get 'page/:page', action: :index
-      end
+    resources :tweets, only: [], to: 'tweets#index' do
+      get 'page/:page', action: :index, on: :collection
     end
     get 'tweets_and_replies/page/:page', on: :member, to: 'tweets#tweets_and_replies'
   end
