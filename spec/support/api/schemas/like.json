@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "required": ["like"],
+    "properties": {
+      "like": {
+        "type": "object",
+        "required": ["user_id", "tweet_id"],
+        "properties": {
+          "user_id": { "type": "integer" },
+          "tweet_id": { "type": "integer" }
+        }
+      }
+    }
+  }
