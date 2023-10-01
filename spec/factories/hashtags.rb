@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :hashtag do
-    name { "MyText" }
+    name { "##{Faker::Lorem.word}" }
   end
 end

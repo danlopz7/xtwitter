@@ -1,6 +1,8 @@
 class Reply < ApplicationRecord
-  belongs_to :user, class_name: 'User'
-  belongs_to :tweet, class_name: 'Tweet'
+  belongs_to :user
+  belongs_to :tweet
 
   validates :content, presence: true, length: { maximum: 255 }
+
+  validates_associated :user, :tweet
 end
