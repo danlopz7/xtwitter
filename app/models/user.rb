@@ -4,10 +4,15 @@ class User < ApplicationRecord
 
     has_many :tweets, dependent: :destroy
     has_many :retweets, class_name: 'Tweet', foreign_key: 'user_id'
+
+    # registros donde este user es el seguidor, follower_id, accion de seguir a un user
     has_many :following_relations, class_name: 'Follow', foreign_key: 'follower_id', dependent: :destroy
+    # followings, registros donde se busca a quienes sigue este usuario
     has_many :followees, through: :following_relations, source: :followee
 
+    # registros donde este user es el seguido, followee_id, accion de ser seguido por un user
     has_many :follower_relations, class_name: 'Follow', foreign_key: 'followee_id', dependent: :destroy
+    # followers, registros donde se busca quienes siguen a este usuario
     has_many :followers, through: :follower_relations, source: :follower
 
     has_many :likes, dependent: :destroy
@@ -34,20 +39,16 @@ class User < ApplicationRecord
     end
 
     #Scopes
-    # Scope to retrieve the number of followers a user has
-    scope :followers_count, ->(user_id) do
-        joins(:follower_relations).where(follower_relations: { followee_id: user_id }).count
-    end
+    # Scope to retrieve the number of followers a user has. "Filtra los registros donde el usuario es el seguido (followee)
+    scope :followers_count, ->(user_id) { Follow.where(followee_id: user_id).count }
+    # scope :followers_count, ->(user_id) do
+    #     joins(:follower_relations).where(follower_relations: { followee_id: user_id }).count
+    # end
 
     # Scope to retrieve the number of users a user follows
-    scope :following_count, ->(user_id) do
-        joins(:following_relations).where(following_relations: { follower_id: user_id }).count
-    end
+    scope :following_count, ->(user_id) { Follow.where(follower_id: user_id).count }
+    # scope :following_count, ->(user_id) do
+    #     joins(:following_relations).where(following_relations: { follower_id: user_id }).count
+    # end
 
-    # Scope that retrieves the bookmarked tweets by a user
-    scope :bookmarked_tweets, ->(user_id) do
-        joins(:bookmarks)
-        .joins("INNER JOIN tweets ON bookmarks.tweet_id = tweets.id")
-        .where(bookmarks: { user_id: user_id })
-    end
 end

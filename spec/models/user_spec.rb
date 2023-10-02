@@ -1,11 +1,6 @@
 require 'rails_helper'
 RSpec.describe User, type: :model do
   
-  # Creando instancias de User y de Tweet usando FactoryBot
-  let(:user) { create(:user) }
-  let(:tweet) { create(:tweet, user: user) }
-  let(:another_user) { create(:user) }
-
   describe 'validations' do
     it { should validate_presence_of(:username) }
     it { should validate_uniqueness_of(:username).case_insensitive }
@@ -26,23 +21,29 @@ RSpec.describe User, type: :model do
     it { should have_many(:replies) }
   end
 
-  describe '.followers_count' do
-    before do
-      create(:follow, follower: another_user, followee: user)
+  describe 'scopes' do
+    # Creando instancias de User usando FactoryBot
+    let(:user) { create(:user) }
+    let(:another_user) { create(:user) }
+    
+    describe ':followers_count' do
+      before do
+        create(:follow, follower: another_user, followee: user)
+      end
+
+      it 'returns the number of followers a user has' do
+        expect(User.followers_count(user.id)).to eq(1)
+      end
     end
 
-    it 'returns the number of followers a user has' do
-      expect(User.followers_count(user.id)).to eq(1)
-    end
-  end
+    describe ':following_count' do
+      before do
+        create(:follow, follower: user, followee: another_user)
+      end
 
-  describe '.following_count' do
-    before do
-      create(:follow, follower: user, followee: another_user)
-    end
-
-    it 'returns the number of users a user follows' do
-      expect(User.following_count(user.id)).to eq(1)
+      it 'returns the number of users a user follows' do
+        expect(User.following_count(user.id)).to eq(1)
+      end
     end
   end
 end

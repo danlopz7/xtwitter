@@ -85,14 +85,4 @@ class Tweet < ApplicationRecord
   
   # Scope to retrieve the number of quotes
   scope :quotes_count, ->(tweet_id) { where(quote_id: tweet_id).count }
-
-  # Scope to retrieve the number of bookmarks
-  # scope that retrieves the bookmarked tweets by a user
-  #scope :bookmarks_count, ->(tweet_id) { Bookmark.where(tweet_id: tweet_id).count }
-
-  # Scope to retrieve bookmarks made by a user
-  scope :bookmarked_by_user, ->(user_id) do
-    joins(:bookmarks).where(bookmarks: { user_id: user_id })
-  end
-
 end

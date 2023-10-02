@@ -21,14 +21,16 @@ RSpec.describe Tweet, type: :model do
   end
 
   describe 'methods' do
-    let(:user) { create(:user) }
-    let(:tweet) { create(:tweet, user: create(:user)) } # Crear un tweet de otro usuario
-
     describe "#retweet" do
+      let(:user) { create(:user) }
+      let(:tweet) { create(:tweet) } # Crear un tweet de otro usuario
+
       context "when the user has not retweeted the tweet" do
         it "allows the user to retweet" do
           expect(user.has_retweeted?(tweet)).to be_falsey
+          puts user.as_json
           expect(tweet.retweet(user)).to be_truthy
+          puts tweet.user.as_json
           expect(user.has_retweeted?(tweet)).to be_truthy
         end
       end
@@ -43,13 +45,14 @@ RSpec.describe Tweet, type: :model do
           expect(tweet.retweet(user)).to be_falsey
         end
       end
-    end
+   end
   
     describe "#quote_tweet" do
+      let(:user) { create(:user) }
       let(:tweet) { create(:tweet) } # Un tweet que será citado
     
       context "with valid text body" do
-        let(:quote_body) { "Esto es una cita del tweet original." }
+        let(:quote_body) { "This is a quote from the original tweet ." }
 
         it "allows the user to quote the tweet" do
           quoted_tweet = tweet.quote_tweet(user, quote_body)
@@ -136,9 +139,12 @@ RSpec.describe Tweet, type: :model do
     let(:tweet) { create(:tweet, user: user) }
 
     before do
+      # create_list(:tweet, 3, user: user)
+      # create_list(:retweet, 4, original_retweet: tweet)
+      # create_list(:quote, 3, original_quote: tweet)
       create_list(:tweet, 3, user: user)
-      create_list(:retweet, 4, original_retweet: tweet)
-      create_list(:quote, 3, original_quote: tweet)
+      create_list(:tweet, 4, :retweet, original_retweet: tweet)
+      create_list(:tweet, 3, :quote, original_quote: tweet)
       
       # Crear replies para el usuario
       tweet_from_another_user = create(:tweet, user: another_user)
