@@ -10,10 +10,10 @@
       ],
       "properties": {
         "id": { "type": "integer" },
-        "user_id": { "type": "integer" },
+        "user": { "type": "integer" },
         "content": { "type": "string" },
-        "retweet_id": { "type": "integer" },
-        "quote_id": { "type": "integer" },
+        "retweet_id": { "type": ["integer", "null"] },
+        "quote_id": { "type": ["integer", "null"] },
         "created_at": { "type": "string", "format": "date-time" },
         "updated_at": { "type": "string", "format": "date-time" }
       }

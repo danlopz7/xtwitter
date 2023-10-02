@@ -8,7 +8,7 @@ require 'rspec/rails'
 require 'support/shoulda_matchers'
 require 'support/factory_bot'
 require 'faker'
-require 'support/api/schemas/matcher.rb'
+require 'support/api/_schema/_matcher.rb'
 require 'json-schema'
 # Add additional requires below this line. Rails is not loaded until this point!
 
