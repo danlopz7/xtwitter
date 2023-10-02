@@ -5,12 +5,13 @@
     "tweet": {
       "type": "object",
       "required": [
-        "user", 
+        "id",
+        "user_id", 
         "content"
       ],
       "properties": {
         "id": { "type": "integer" },
-        "user": { "type": "integer" },
+        "user_id": { "type": "integer" },
         "content": { "type": "string" },
         "retweet_id": { "type": ["integer", "null"] },
         "quote_id": { "type": ["integer", "null"] },

@@ -1,4 +1,5 @@
-module TweetStats
+module TweetStats 
+  extend ActiveSupport::Concern
 
     def get_stats(tweet)
         id = tweet.id

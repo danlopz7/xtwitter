@@ -38,6 +38,11 @@ class User < ApplicationRecord
         liked_tweets.exists?(tweet.id)
     end
 
+    # Method to check if the user has bookmarked a tweet
+    def has_bookmarked?(tweet)
+        bookmarks.exists?(tweet.id)
+    end
+
     #Scopes
     # Scope to retrieve the number of followers a user has. "Filtra los registros donde el usuario es el seguido (followee)
     scope :followers_count, ->(user_id) { Follow.where(followee_id: user_id).count }

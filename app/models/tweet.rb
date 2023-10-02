@@ -28,9 +28,9 @@ class Tweet < ApplicationRecord
     # Check if the user hasn't already retweeted this tweet
     unless user.has_retweeted?(self)
       # Create a new retweet associated with the user
-      retweet = Tweet.new(user_id: user.id, retweet_id: id)
+      retweet = Tweet.new(user_id: user.id, content: self.content, retweet_id: id)
       if retweet.save
-        return true # Retweet successful
+        return retweet 
       end
     end
     false # Retweet unsuccessful (e.g., user alresady retweeted)
@@ -52,10 +52,21 @@ class Tweet < ApplicationRecord
       # Create a new like associated with the user
       like = Like.new(user_id: user.id, tweet_id: id)
       if like.save
-        return true # Like successful
+        return like # Like successful
       end
     end
     false # Like unsuccessful (e.g., user already liked the tweet)
+  end
+
+  # Method for bookmark a tweet
+  def bookmark(user)
+    unless user.has_bookmarked?(self)
+      bookmark = Bookmark.new(user_id: user.id, tweet_id: id)
+      if bookmark.save
+        return bookmark #Bookmark successful
+      end
+    end
+    false # Bookmark unsuccessful (e.g., user already bookmarked the tweet)
   end
 
   # Method to create hashtags from tweet content
