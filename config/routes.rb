@@ -20,6 +20,11 @@ Rails.application.routes.draw do
     resources :users, only: [] do
       get 'tweets(/page/:page)', to: 'tweets#index'
       get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies'
+      #get '/register', to: 'users#create'
+      #get 'sign_in', to: 'sessions#new'
+      #get 'sign_out', to: 'sessions#destroy'
+      # for receiving the post request for creating the session
     end
+    resources :sessions, only: [:create]
   end
 end

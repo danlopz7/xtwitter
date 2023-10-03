@@ -26,6 +26,8 @@ class Api::UsersController < Api::ApiController
 
     # POST /users or /users.json 
     def create 
+        # parameters:
+        # {authenticity_token=>[filtered] and the hash "user"=>{"email"=>'', "pass"=>''} received from the form 
         @user = User.new(user_params)
 
         respond_to do |format|
