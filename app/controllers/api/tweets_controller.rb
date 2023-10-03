@@ -76,11 +76,9 @@ class Api::TweetsController < Api::ApiController
     def like
         user = User.find(params[:user_id])
         @liked = @tweet.like(user)
-        
-        unless @liked.valid?
-            @errors = @liked.errors
-            @klass = @liked.class
-            render partial: "shared/errors", klass: @klass, error_messages: @liked.errors.messages, status: :unprocessable_entity
+
+        unless @liked
+            render_errors(@liked)
         end
     end
 
@@ -99,8 +97,8 @@ class Api::TweetsController < Api::ApiController
         user = User.find(params[:user_id])
         @bookmark = @tweet.bookmark(user)
 
-        unless @bookmark
-            render json: { errors: ["You've already bookmarked this tweet."] }, status: :unprocessable_entity
+        unless @bookmark.valid?
+            render_errors(@liked)
         end
     end
     

@@ -9,4 +9,11 @@ class Api::ApiController < ApplicationController
     # Si el usuario no está autenticado, puedes responder con un error, por ejemplo:
     # render json: { error: "Not authorized" }, status: :unauthorized unless <tu_condicion_de_autenticación>
   end
+
+  def render_errors(instance)
+    @errors = instance.errors
+    @klass = instance.class
+    render 'shared/errors', status: :unprocessable_entity
+  end
+  
 end

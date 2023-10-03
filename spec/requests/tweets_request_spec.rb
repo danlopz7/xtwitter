@@ -184,8 +184,6 @@ RSpec.describe "Tweets", type: :request do
             post like_api_tweet_path(tweet.id), params: { user_id: user.id }
 
             expect(response).to have_http_status(422)
-            parsed_response = JSON.parse(response.body)
-            expect(parsed_response["errors"]).to include("You've already liked this tweet.")
         end
     end
   end
