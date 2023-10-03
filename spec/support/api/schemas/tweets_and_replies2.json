@@ -1,0 +1,102 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "tweet": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "user_id": {
+                "type": "integer"
+              },
+              "content": {
+                "type": "string"
+              },
+              "quote_id": {
+                "type": "integer"
+              },
+              "retweet_id": {
+                "type": "integer"
+              },
+              "created_at": {
+                "type": "string"
+              },
+              "updated_at": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "user_id",
+              "content",
+              "quote_id",
+              "retweet_id",
+              "created_at",
+              "updated_at"
+            ]
+          }
+        ]
+      },
+      "reply": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "user_id": {
+                "type": "integer"
+              },
+              "tweet_id": {
+                "type": "integer"
+              },
+              "content": {
+                "type": "string"
+              },
+              "created_at": {
+                "type": "string"
+              },
+              "updated_at": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "user_id",
+              "tweet_id",
+              "content",
+              "created_at",
+              "updated_at"
+            ]
+          }
+        ]
+      },
+      "pagination": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "per_page": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "page",
+          "per_page"
+        ]
+      }
+    },
+    "required": [
+      "tweet",
+      "reply",
+      "pagination"
+    ]
+  }

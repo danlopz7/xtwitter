@@ -109,21 +109,21 @@ RSpec.describe "Tweets", type: :request do
     context "with valid params" do
       it "returns 201 status response for creating a quote" do
         puts tweet.as_json
-        post quote_tweet_path(tweet), params: valid_quote_params
+        post quote_api_tweet_path(tweet), params: valid_quote_params
         puts response.body
         
         expect(response).to have_http_status(:created)
       end
   
       it "should create a quote tweet matching json schema" do
-        post quote_tweet_path(tweet), params: valid_quote_params
+        post quote_api_tweet_path(tweet), params: valid_quote_params
         expect(response).to match_response_schema("tweet")
       end
     end
   
     context "with invalid params" do
       it "does not create a quote tweet" do
-        post quote_tweet_path(tweet), params: invalid_quote_params
+        post quote_api_tweet_path(tweet), params: invalid_quote_params
         expect(response).to have_http_status(422)
       end
     end
@@ -137,14 +137,14 @@ RSpec.describe "Tweets", type: :request do
     context "with valid params" do
         it "returns 201 status response for creating a retweet" do
             puts tweet.as_json
-            post retweet_tweet_path(tweet.id), params: { user_id: user.id }
+            post retweet_api_tweet_path(tweet.id), params: { user_id: user.id }
             puts response.body
 
             expect(response).to have_http_status(:created)
         end
 
         it "should create a retweet matching json schema" do
-            post retweet_tweet_path(tweet.id), params: { user_id: user.id }
+            post retweet_api_tweet_path(tweet.id), params: { user_id: user.id }
             expect(response).to match_response_schema("tweet")
         end
     end
@@ -152,11 +152,11 @@ RSpec.describe "Tweets", type: :request do
     context "with invalid params" do
         it "does not retweet again" do
             # Retweet once
-            post retweet_tweet_path(tweet.id), params: { user_id: user.id }
+            post retweet_api_tweet_path(tweet.id), params: { user_id: user.id }
             expect(response).to have_http_status(:created)
 
             # Try to retweet again
-            post retweet_tweet_path(tweet.id), params: { user_id: user.id }
+            post retweet_api_tweet_path(tweet.id), params: { user_id: user.id }
             expect(response).to have_http_status(422)
         end
     end
@@ -168,7 +168,7 @@ RSpec.describe "Tweets", type: :request do
     let(:tweet) { create(:tweet) } 
 
     it "likes the tweet" do
-      post like_tweet_path(tweet.id), params: { user_id: user.id }
+      post like_api_tweet_path(tweet.id), params: { user_id: user.id }
 
       expect(response).to have_http_status(:ok)
 
@@ -181,7 +181,7 @@ RSpec.describe "Tweets", type: :request do
         end
 
         it "does not create another like" do
-            post like_tweet_path(tweet.id), params: { user_id: user.id }
+            post like_api_tweet_path(tweet.id), params: { user_id: user.id }
 
             expect(response).to have_http_status(422)
             parsed_response = JSON.parse(response.body)

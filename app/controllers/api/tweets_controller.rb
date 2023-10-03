@@ -76,7 +76,6 @@ class Api::TweetsController < Api::ApiController
     def like
         user = User.find(params[:user_id])
         @liked = @tweet.like(user)
-
         
         unless @liked.valid?
             @errors = @liked.errors

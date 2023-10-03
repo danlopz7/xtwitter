@@ -30,6 +30,10 @@
           "updated_at": { "type": "string", "format": "date-time" }
         }
       }
+    },
+    "pagination": {
+      "page": { "type": "integer" },
+      "per_page": { "type": "integer" }
     }
   }
 }
