@@ -272,7 +272,7 @@ RSpec.describe "Tweets", type: :request do
   
         expect(response).to have_http_status(422)
         json_response = JSON.parse(response.body)
-        expect(json_response["errors"]).to include("Bookmark not found or could not be deleted")
+        expect(json_response["errors"]).to include("Bookmark not found.")
       end
     end
   end
