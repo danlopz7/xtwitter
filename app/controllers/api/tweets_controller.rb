@@ -1,4 +1,4 @@
-class API::TweetsController < Api::BaseApiController
+class Api::TweetsController < Api::ApiController
     include TweetStats
 
     before_action :set_tweet, only: [:update, :stats, :retweet, :quote, :bookmark, :unbookmark, :like, :unlike, :tweets_and_replies]
