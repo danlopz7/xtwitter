@@ -9,14 +9,15 @@ RSpec.describe "Tweets", type: :request do
 
     context "with valid params" do
       it 'returns 201 status response for creating a new tweet' do
-        post tweets_path, :params => valid_params
+        post api_tweets_path, :params => valid_params
         puts response.body
 
         expect(response).to have_http_status(:created)
       end
 
       it "should create a new tweet matching json schema" do
-        post tweets_path, params: valid_params
+        post api_tweets_path, params: valid_params
+        puts response.body
         #Rails.logger.debug response.body
         
         expect(response).to match_response_schema("tweet")
@@ -25,7 +26,7 @@ RSpec.describe "Tweets", type: :request do
 
     context "with invalid params" do
       it "does not create a new tweet" do
-        post tweets_path, params: invalid_params
+        post api_tweets_path, params: invalid_params
         puts response.body
 
         expect(response).to have_http_status(422)
@@ -50,7 +51,7 @@ RSpec.describe "Tweets", type: :request do
         puts @tweet.as_json
 
         # Actualizar el tweet
-        put tweet_path(@tweet), params: { tweet: { content: updated_tweet_content } }
+        put api_tweet_path(@tweet), params: { tweet: { content: updated_tweet_content } }
 
         # Recuperar el tweet de la base de datos y comprobar que ha sido actualizado
         @updated_tweet = Tweet.find(@tweet.id)
@@ -62,7 +63,7 @@ RSpec.describe "Tweets", type: :request do
       end
 
       it "should update a tweet matching json schema" do
-        put tweet_path(@tweet), params: { tweet: { content: updated_tweet_content } }
+        put api_tweet_path(@tweet), params: { tweet: { content: updated_tweet_content } }
 
         expect(response).to match_response_schema("tweet")
       end
@@ -70,7 +71,7 @@ RSpec.describe "Tweets", type: :request do
 
     context "with invalid params" do
       it "does not update a tweet" do
-        put tweet_path(@tweet), params: { tweet: { content: empty_tweet_content } }
+        put api_tweet_path(@tweet), params: { tweet: { content: empty_tweet_content } }
   
         # Recuperar el tweet de la base de datos y comprobar que no ha sido actualizado
         @updated_tweet = Tweet.find(@tweet.id)

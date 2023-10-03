@@ -5,8 +5,8 @@
     "user": {
       "type": "object",
       "required": [
-        "email", 
         "username", 
+        "email",
         "password"
       ],
       "properties": {

@@ -1,0 +1,16 @@
+{
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": ["id", "content", "user_id", "created_at", "updated_at", "retweet_id", "quote_id"],
+      "properties" : {
+        "id" : { "type" : "integer" },
+        "content" : { "type" : "string" },
+        "user_id" : { "type" : "integer" },
+        "retweet_id": { "type": ["integer", "null"] },
+        "quote_id": { "type": ["integer", "null"] },
+        "created_at" : { "type" : "string", "format": "date-time" },
+        "updated_at" : { "type" : "string", "format": "date-time" }
+      }
+    }
+  }

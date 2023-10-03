@@ -1,4 +1,7 @@
-json.tweet do
-    json.extract! @tweet, :id, :user_id, :content, :retweet_id, :quote_id, :created_at, :updated_at
+if @tweet.persisted? && !@tweet.changed?
+  json.tweet do
+    json.partial! 'api/tweets/tweet', tweet: @tweet
   end
-  
+else
+  json.errors @tweet.errors.full_messages
+end

@@ -20,21 +20,21 @@ class Api::TweetsController < Api::ApiController
     def create
       @tweet = Tweet.new(tweet_params)
 
-        if @tweet.save
-            #format.json { render json: { tweet: @tweet }, status: :created }
-            render :create, status: :created
-          else
-            #format.json { render json: { errors: @tweet.errors.full_messages }, status: :unprocessable_entity }
-            render json: { errors: @tweet.errors.full_messages }, status: :unprocessable_entity
-          end
+      if @tweet.save
+        render status: :created
+      else
+        render status: :unprocessable_entity
+      end
     end
 
 
     # PATCH/PUT /tweets/:id
     def update
-        unless @tweet.update(tweet_params)
-            render json: { errors: @tweet.errors.full_messages }, status: :unprocessable_entity
-        end
+      if @tweet.update(tweet_params)
+        render status: :ok
+      else
+        render status: :unprocessable_entity
+      end
     end
 
 
@@ -50,20 +50,24 @@ class Api::TweetsController < Api::ApiController
       current_user = tweet_params[:user_id]
   
       @quote_tweet = Tweet.new(user_id: current_user, content: tweet_params[:content], quote_id: original_tweet.id)
-  
-      unless @quote_tweet.save
-        render json: { errors: @quote_tweet.errors.full_messages }, status: :unprocessable_entity
+
+      if @quote_tweet.save
+        render status: :created
+      else
+        render status: :unprocessable_entity
       end
     end
 
 
     # POST /tweets/:id/retweet
     def retweet
-    user = User.find(params[:user_id]) # Obtener el usuario desde los parámetros
-    @retweet = @tweet.retweet(user)
+      user = User.find(params[:user_id]) # Obtener el usuario desde los parámetros
+      @retweet = @tweet.retweet(user)
 
-        unless @retweet
-        render json: { errors: ["You've already retweeted this tweet."] }, status: :unprocessable_entity
+      if @retweet
+        render status: :created
+      else
+        render status: :unprocessable_entity
       end
     end
 
@@ -73,8 +77,11 @@ class Api::TweetsController < Api::ApiController
         user = User.find(params[:user_id])
         @liked = @tweet.like(user)
 
-        unless @liked
-            render json: { errors: ["You've already liked this tweet."] }, status: :unprocessable_entity
+        
+        unless @liked.valid?
+            @errors = @liked.errors
+            @klass = @liked.class
+            render partial: "shared/errors", klass: @klass, error_messages: @liked.errors.messages, status: :unprocessable_entity
         end
     end
 
