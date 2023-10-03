@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "articles#index"
-  resources :tweets, only: [:create, :update] do
+  resources :tweets, only: [:create, :update], defaults: {format: :json} do
     member do
       get 'stats', to: 'tweets#stats'
       post 'like', to: 'tweets#like'

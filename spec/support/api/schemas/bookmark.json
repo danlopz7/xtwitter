@@ -4,10 +4,16 @@
     "properties": {
       "bookmark": {
         "type": "object",
-        "required": ["user_id", "tweet_id"],
+        "required": ["id", 
+        "user_id", 
+        "tweet_id"
+      ],
         "properties": {
+          "id": { "type": "integer"},
           "user_id": { "type": "integer" },
-          "tweet_id": { "type": "integer" }
+          "tweet_id": { "type": "integer" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
         }
       }
     }

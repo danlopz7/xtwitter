@@ -7,6 +7,9 @@ class Bookmark < ApplicationRecord
 
   # Association Validations
   validates_associated :user, :tweet
+  
+  # Validations
+  validates :tweet_id, uniqueness: { scope: :user_id }
 
   # Scope to retrieve bookmarks made by a user
   scope :user_bookmarks, ->(user_id) { where(user_id: user_id) }
