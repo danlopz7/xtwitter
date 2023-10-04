@@ -1,10 +1,11 @@
 class User < ApplicationRecord
+
+    PASSWORD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])/
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
-
-    PASSWORD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])/
 
     has_many :tweets, dependent: :destroy
     has_many :retweets, class_name: 'Tweet', foreign_key: 'user_id'
@@ -50,14 +51,7 @@ class User < ApplicationRecord
     #Scopes
     # Scope to retrieve the number of followers a user has. "Filtra los registros donde el usuario es el seguido (followee)
     scope :followers_count, ->(user_id) { Follow.where(followee_id: user_id).count }
-    # scope :followers_count, ->(user_id) do
-    #     joins(:follower_relations).where(follower_relations: { followee_id: user_id }).count
-    # end
 
     # Scope to retrieve the number of users a user follows
     scope :following_count, ->(user_id) { Follow.where(follower_id: user_id).count }
-    # scope :following_count, ->(user_id) do
-    #     joins(:following_relations).where(following_relations: { follower_id: user_id }).count
-    # end
-
 end
