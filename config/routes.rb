@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
+  devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
   # root "articles#index"
   namespace :api, defaults: {format: :json} do
+    post 'log_in', to: 'authentication#create'
+    
     resources :tweets, only: [:create, :update] do
       member do
         get 'stats', to: 'tweets#stats'
@@ -17,7 +20,7 @@ Rails.application.routes.draw do
       resources :replies, only: [:create], to: 'replies#create'
     end
 
-    resources :users, only: [] do
+    resources :users, only: [:create] do
       get 'tweets(/page/:page)', to: 'tweets#index'
       get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies'
       #get '/register', to: 'users#create'
