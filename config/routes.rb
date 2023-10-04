@@ -1,13 +1,14 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: { registrations: 'registration' }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
   # root "articles#index"
   namespace :api, defaults: {format: :json} do
     post 'log_in', to: 'authentication#create'
+    #post 'sign_up', to: 'registration#create_user'
     
-    resources :tweets, only: [:create, :update] do
+    resources :tweets, only: [:create, :update, :show] do
       member do
         get 'stats', to: 'tweets#stats'
         post 'like', to: 'tweets#like'

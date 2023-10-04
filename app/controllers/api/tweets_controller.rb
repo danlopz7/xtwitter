@@ -2,11 +2,16 @@ class Api::TweetsController < Api::ApiController
     include TweetStats
 
     before_action :set_tweet, only: [:update, :stats, :retweet, :quote, :bookmark, :unbookmark, :like, :unlike, :tweets_and_replies]
+    before_action :authenticate_user!, except: [:index, :show]
     
     # GET /users/:user_id/tweets
     def index
         @tweets = Tweet.all
         #render json: { tweet: @tweets }, status: :ok
+    end
+
+    def show
+      @tweet = Tweet.find(params[:id])
     end
 
 
@@ -19,6 +24,7 @@ class Api::TweetsController < Api::ApiController
     # POST /tweets === tweets_path 
     def create
       @tweet = Tweet.new(tweet_params)
+      #@tweet = current_user.tweets.new(tweet_params)
 
       if @tweet.save
         render status: :created

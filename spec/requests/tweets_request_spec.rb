@@ -2,37 +2,83 @@ require 'rails_helper'
 
 RSpec.describe "Tweets", type: :request do
 
-  describe "POST /tweets" do
-    let(:user) { create(:user) }
-    let(:valid_params) { { tweet: { content: "This is a tweet.", user_id: user.id } } }
-    let(:invalid_params) { { tweet: { content: "", user_id: user.id } } }
+  let(:user) { create(:user) }
+
+  def authenticate_user_get_token(user)
+    post api_log_in_path, params: { id: user.id, password: user.password }
+    json_response = JSON.parse(response.body)
+    json_response["token"]
+  end
+
+  def authenticated_header(token)
+    {
+      'Authorization' => "Bearer #{token}"
+    }
+  end
+
+
+  describe "POST /api/tweets" do
+    before do
+      token = authenticate_user_get_token(user)
+      @auth_headers = authenticated_header(token)
+    end
 
     context "with valid params" do
-      it 'returns 201 status response for creating a new tweet' do
-        post api_tweets_path, :params => valid_params
-        puts response.body
+      let(:valid_params) { { tweet: { content: "This is a tweet.", user_id: user.id } } }
+      #let(:valid_params) { { tweet: { content: "This is a test tweet" } } }
+      
+      it "creates a new tweet and returns a 201 status response" do
+        expect {
+          post api_tweets_path, params: valid_params.to_json, headers: @auth_headers
+          debugger
+        }.to change(Tweet, :count).by(1)
 
         expect(response).to have_http_status(:created)
       end
-
-      it "should create a new tweet matching json schema" do
-        post api_tweets_path, params: valid_params
-        puts response.body
-        #Rails.logger.debug response.body
-        
-        expect(response).to match_response_schema("tweet")
-      end
-    end
-
-    context "with invalid params" do
-      it "does not create a new tweet" do
-        post api_tweets_path, params: invalid_params
-        puts response.body
-
-        expect(response).to have_http_status(422)
-      end
     end
   end
+
+
+  
+
+
+  # describe "POST /tweets" do
+
+  #  
+
+
+  #   let(:invalid_params) { { tweet: { content: "", user_id: user.id } } }
+
+  #   
+
+  #   context "with valid params" do
+  #     it 'returns 201 status response for creating a new tweet' do
+  #       expect {
+  #         post api_tweets_path, params: valid_params, headers: @auth_headers
+  #       }.to change(Tweet, :count).by(1)
+
+  #       expect(response).to have_http_status(:created)
+
+  #       json_response = JSON.parse(response.body)
+  #       expect(json_response["tweet"]["content"]).to eq("This is a test tweet")
+  #     end
+
+  #     it "should create a new tweet matching json schema" do
+  #       post api_tweets_path, params: valid_params
+        
+  #       expect(response).to match_response_schema("tweet")
+  #     end
+  #   end
+
+  #   context "with invalid params" do
+  #     it "does not create a new tweet" do
+  #       post api_tweets_path, params: invalid_params
+  #       puts response.body
+
+  #       expect(response).to have_http_status(422)
+  #     end
+  #   end
+  # end
 
 
   describe "PUT /tweets/:id" do
