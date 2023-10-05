@@ -7,12 +7,11 @@ FactoryBot.define do
     #password { Faker::Internet.password(min_length: 12, max_length: 20, mix_case: true, special_characters: true) }
     password { "TestPassword123!" }
     password_confirmation { "TestPassword123!" }
-    #pasword { "Password123!" }
   end
 
   trait :registered_user do
     email { Faker::Internet.email }
-    pasword { "Password123!" }
-    pasword_confirmation { "Password123!" }
+    password { "TestPassword123!" }
+    pasword_confirmation { "TestPassword123!" }
   end
 end

@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { registrations: 'registration' }
+  devise_for :users, skip: [:sessions, :registrations]
 
   namespace :api do
 
