@@ -4,27 +4,30 @@ class Api::TweetsController < Api::ApiController
     before_action :set_tweet, only: [:update, :stats, :retweet, :quote, :bookmark, :unbookmark, :like, :unlike, :tweets_and_replies]
     before_action :authenticate_user!, except: [:index, :show]
     
-    # GET /users/:user_id/tweets
+    # GET /api/users/:user_id/tweets(/page/:page)
     def index
-        @tweets = Tweet.all
+        @tweets = User.find(params[:user_id])
+        render status: :ok
         #render json: { tweet: @tweets }, status: :ok
     end
 
+    # GET /api/tweets/:id 
     def show
       @tweet = Tweet.find(params[:id])
+      render status: :ok
     end
 
-
+    # GET /api/users/:user_id/tweets_and_replies(/page/:page)
     def tweets_and_replies
-        @tweets_and_replies = Tweet.user_tweets_and_replies(@tweet.user_id)
-        #render json: { tweet: @tweets_and_replies }, status: :ok
+      user = User.find(params[:user_id])
+      @tweets_and_replies = @tweet.user_tweets_and_replies(user)
+      render status: :ok
     end
 
-
-    # POST /tweets === tweets_path 
+    # POST /api/tweets
     def create
-      @tweet = Tweet.new(tweet_params)
-      #@tweet = current_user.tweets.new(tweet_params)
+      #@tweet = Tweet.new(tweet_params)
+      @tweet = current_user.tweets.new(tweet_params)
 
       if @tweet.save
         render status: :created
@@ -33,89 +36,85 @@ class Api::TweetsController < Api::ApiController
       end
     end
 
-
-    # PATCH/PUT /tweets/:id
+    # PUT/PATCH /api/tweets/:id
     def update
+      @tweet = current_user.tweets.find(params[:id])
       if @tweet.update(tweet_params)
         render status: :ok
       else
         render status: :unprocessable_entity
       end
+      # if @tweet.update(tweet_params)
+      #   render status: :ok
+      # else
+      #   render status: :unprocessable_entity
+      # end
     end
 
-
+    # 
     def stats
       @stats_response = get_stats(@tweet)
       #render json: { stats: response }, status: :ok
     end
 
-
-    # POST /tweets/:id/quote
+    # POST /api/tweets/:id/quote
     def quote
-      original_tweet = @tweet
-      current_user = tweet_params[:user_id]
-  
-      @quote_tweet = Tweet.new(user_id: current_user, content: tweet_params[:content], quote_id: original_tweet.id)
+      # original_tweet = @tweet
+      # current_user = tweet_params[:user_id]
+      @quote_tweet = @tweet.quote_tweet(current_user, content: params[:content])
 
-      if @quote_tweet.save
-        render status: :created
+      if @quote_tweet
+        render json: @quoted_tweet, status: :created
       else
         render status: :unprocessable_entity
       end
     end
 
-
-    # POST /tweets/:id/retweet
+    # POST /api/tweets/:id/retweet
     def retweet
-      user = User.find(params[:user_id]) # Obtener el usuario desde los parámetros
-      @retweet = @tweet.retweet(user)
+      #user = User.find(params[:user_id]) # Obtener el usuario desde los parámetros
+      @retweet = @tweet.retweet(current_user)
 
       if @retweet
-        render status: :created
+        render json: @retweet, status: :created
       else
         render status: :unprocessable_entity
       end
     end
 
-
-    # POST /tweets/:id/like
+    # POST /api/tweets/:id/like
     def like
-        user = User.find(params[:user_id])
-        @liked = @tweet.like(user)
+        #user = User.find(params[:user_id])
+        @liked = @tweet.like(current_user)
 
-        unless @liked
-            render_errors(@liked)
+        if @like
+          render json: @like, status: :created
+        else
+          render status: :unprocessable_entity
         end
     end
 
-
     # DELETE /tweets/:id/unlike
     def unlike
-        @unlike = Like.find_by(user_id: @tweet.user_id, tweet_id: @tweet.id)
+        @unlike = Like.find_by(user_id: current_user, tweet_id: @tweet.id)
         unless @unlike&.destroy
             render json: { errors: ["Like not found or could not be deleted"] }, status: :unprocessable_entity
         end
     end
 
-
     # POST /tweets/:id/bookmark
     def bookmark
-        user = User.find(params[:user_id])
-        @bookmark = @tweet.bookmark(user)
+      #user = User.find(params[:user_id])
+      @bookmark = @tweet.bookmark(current_user)
 
-        unless @bookmark.valid?
-            render_errors(@liked)
-        end
+      if @bookmark
+        render json: @bookmark, status: :created
+      else
+        render status: :unprocessable_entity
+      end
     end
-    
-    
-    # DELETE /tweets/:id/unbookmark
-    def unbookmark
-        @unbookmark = Bookmark.find_by(user_id: params[:user_id], tweet_id: @tweet.id)
-  
-        unless @unbookmark&.destroy
-            render json: { errors: ['Bookmark not found.'] }, status: :unprocessable_entity
-        end
+
+    def create_reply
     end
   
     private

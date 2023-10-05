@@ -11,6 +11,7 @@ class Api::ApiController < ApplicationController
   #before_action :authenticate_token!
   before_action :authenticate_user!
 
+
   private
 
   def set_default_format
