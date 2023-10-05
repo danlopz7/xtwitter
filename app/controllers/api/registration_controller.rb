@@ -3,7 +3,8 @@ class Api::RegistrationController < Api::AuthenticationController
   def create_user
     user = User.new(sign_up_params)
 
-    if user.save
+    user.save
+    if user
       token = authenticate_user(user)
       render json: { token: token }, status: :ok
     else

@@ -1,4 +1,6 @@
-json.partial! 'api/tweets/tweet', tweet: @tweet
+json.tweet do
+    json.partial! 'api/tweets/tweet', tweet: @tweet
+end
 #json.url tweet_url(@tweet)
 
 # 1. json.partial! 'api/tweets/tweet', tweet: @tweet - Esto carga el archivo parcial _tweet.json.jbuilder y le pasa el @tweet de la acción show a ese parcial bajo el nombre local tweet.

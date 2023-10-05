@@ -30,7 +30,7 @@ RSpec.describe "Tweets", type: :request do
       it "creates a new tweet and returns a 201 status response" do
         expect {
           post api_tweets_path, params: valid_params.to_json, headers: @auth_headers
-          debugger
+    
         }.to change(Tweet, :count).by(1)
 
         expect(response).to have_http_status(:created)

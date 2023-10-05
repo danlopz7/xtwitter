@@ -1,9 +1,11 @@
 class Api::SessionsController < Api::AuthenticationController
   
   def create_user_token
-    user = User.find_by(email: params[:user][:email])
-    if user&.valid_password?(params[:user][:password])
+    user = User.find_by(email: params[:email])
+    if user&.valid_password?(params[:password])
+      
       token = authenticate_user(user)
+      #debugger
       render json: { token: token }, status: :ok
     else
       render json: { error: 'Invalid email or password' }, status: :unauthorized
@@ -11,7 +13,11 @@ class Api::SessionsController < Api::AuthenticationController
   end
 
   def destroy_user_token
-    current_user.update(jwt_token: nil)
+    token = params[:token]
+    decoded_token = JsonWebToken.decode(token)
+    user_id = decoded_token["sub"] 
+    user = User.find(user_id)
+    user.update(jwt_token: nil)
     render json: { message: "Logged out successfully" }, status: :ok
   end
 end

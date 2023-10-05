@@ -8,6 +8,8 @@
         "id",
         "user_id", 
         "content",
+        "retweet_id",
+        "quote_id",
         "created_at",
         "updated_at"
       ],

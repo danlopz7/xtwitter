@@ -1,8 +1,8 @@
 class Api::TweetsController < Api::ApiController
     include TweetStats
 
-    before_action :set_tweet, only: [:update, :stats, :retweet, :quote, :bookmark, :unbookmark, :like, :unlike, :tweets_and_replies]
-    before_action :authenticate_user!, except: [:index, :show]
+    before_action :set_tweet, only: [:show, :update, :stats, :retweet, :quote, :bookmark, :unbookmark, :like, :unlike, :tweets_and_replies]
+    before_action :authenticate_user!#, except: [:index, :show]
     
     # GET /api/users/:user_id/tweets(/page/:page)
     def index
@@ -13,8 +13,6 @@ class Api::TweetsController < Api::ApiController
 
     # GET /api/tweets/:id 
     def show
-      @tweet = Tweet.find(params[:id])
-      render status: :ok
     end
 
     # GET /api/users/:user_id/tweets_and_replies(/page/:page)

@@ -6,18 +6,14 @@ RSpec.describe "API::Sessions", type: :request do
     let(:user) { create(:user) }
     let(:valid_attributes) {
       {
-        user: {
-          email: user.email,
-          password: 'TestPassword123!'
-        }
+        email: user.email,
+        password: 'TestPassword123!'
       }
     }
     let(:invalid_attributes) {
       {
-        user: {
-          email: user.email,
-          password: 'wrongpassword'
-        }
+        email: user.email,
+        password: 'wrongpassword'
       }
     }
 
