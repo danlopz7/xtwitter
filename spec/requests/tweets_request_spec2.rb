@@ -7,7 +7,7 @@ RSpec.describe "Api::Tweets", type: :request do
 
   # Métodos auxiliares
   def authenticate_user_get_token(user)
-    post api_log_in_path, params: { id: user.id, password: user.password }
+    post user_session, params: { id: user.id, password: user.password }
     json_response = JSON.parse(response.body)
     json_response["token"]
   end
