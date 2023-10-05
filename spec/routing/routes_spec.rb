@@ -60,7 +60,7 @@ describe 'Routing to Api::Tweets Controller' do
         # Nested resources under Tweets for Replies
         describe "Replies under Tweets" do
             it "routes to /api/tweets/:tweet_id/replies for replies under tweets to the tweets controller" do
-            expect(post("/api/tweets/1/replies")).to route_to("api/tweets#create", tweet_id: "1")
+            expect(post("/api/tweets/1/replies")).to route_to("api/tweets#create_reply", tweet_id: "1")
             end
         end
     end
