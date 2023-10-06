@@ -63,7 +63,6 @@ Rails.application.routes.draw do
   end
 end                 
                                   
-                                  Prefix Verb   URI Pattern                                                                                       Controller#Action
                                     root GET    /                                                                                                 home#index
                         api_user_session POST   /api/users/sign_in(.:format)                                                                      api/sessions#create_user_token
                 api_destroy_user_session DELETE /api/users/sign_out(.:format)                                                                     api/sessions#destroy_user_token
@@ -81,7 +80,7 @@ end
                           api_user_tweet GET    /api/users/:user_id/tweets/:id(.:format)                                                          api/tweets#show
                                          PATCH  /api/users/:user_id/tweets/:id(.:format)                                                          api/tweets#update
                                          PUT    /api/users/:user_id/tweets/:id(.:format)                                                          api/tweets#update
-
+                                         
                 web_current_user_profile GET    /web/profile(.:format)                                                                            web/users#profile
                          tweets_web_user GET    /web/user/:username/tweets(/page/:page)(.:format)                                                 web/tweets#index
              tweets_and_replies_web_user GET    /web/user/:username/tweets_and_replies(/page/:page)(.:format)                                     web/tweets#tweets_and_replies
@@ -99,7 +98,6 @@ end
                                web_tweet GET    /web/tweets/:id(.:format)                                                                         web/tweets#show
                                          PATCH  /web/tweets/:id(.:format)                                                                         web/tweets#update
                                          PUT    /web/tweets/:id(.:format)                                                                         web/tweets#update
-
 
 WHEN THE USER IS SIGNED IN
   redirect the user to TweetsController#Index using redirect_to

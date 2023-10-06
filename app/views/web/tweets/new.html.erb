@@ -1,5 +1,9 @@
-<p style="color: green"><%= notice %></p>
+<h1>New tweet</h1>
 
-<h1>New Tweet</h1>
-<%= render 'form' %>
-<%= link_to "Back to Tweets", tweets_path %>
+<%= render "form", tweet: @tweet %>
+
+<br>
+
+<div>
+  <%= link_to "Back to tweets", tweets_path %>
+</div>

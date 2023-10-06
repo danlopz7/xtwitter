@@ -4,12 +4,11 @@
 
 <div id="tweets">
   <% @tweets.each do |tweet| %>
+    <%= render tweet %>
     <p>
-      <%= tweet.content %> - <%= link_to tweet.user.username, user_path(tweet.user) %>
-      <br>
-      <%= link_to "View Tweet", tweet_path(tweet) %>
+      <%= link_to "Show this tweet", tweet %>
     </p>
   <% end %>
 </div>
 
-<%= link_to "New Tweet", new_tweet_path %>
+<%= link_to "New tweet", new_tweet_path %>
