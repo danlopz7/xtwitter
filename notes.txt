@@ -15,7 +15,7 @@ Rails.application.routes.draw do
       get 'tweets(/page/:page)', to: 'tweets#index'
       get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies'
 
-      resources :tweets, only: [ :show, :create, :update :new ] do
+      resources :tweets, only: [ :show, :create, :update ] do
         member do
           post 'retweet'
           post 'quote'
@@ -30,38 +30,40 @@ Rails.application.routes.draw do
     end
   end
 
-  # Ruta del perfil del usuario actual
-  get 'profile', to: 'users#profile', as: 'current_user_profile'
+  namespace :web do
+    # Ruta del perfil del usuario actual
+    get 'profile', to: 'users#profile', as: 'current_user_profile'
+  
+    # Rutas relacionadas con usuarios específicos
+    # GET /user/:username Should display the personal information of the user: 
+    resources :user, only: ["show"], param: :username, controller: "users" do
+      #get 'user/:username', to: 'users#show'
+      member do
+        # estas rutas mostraran los tweets y replies de un usuario especifico
+        get 'tweets(/page/:page)', to: 'tweets#index', as: 'tweets'
+        get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies', as: 'tweets_and_replies'
+      end
+    end
 
-  # Rutas relacionadas con usuarios específicos
-  # GET /user/:username Should display the personal information of the user: 
-  resources :user, only: ["show"], param: :username, controller: "users" do
-    #get 'user/:username', to: 'users#show'
-    member do
-      # estas rutas mostraran los tweets y replies de un usuario especifico
-      get 'tweets(/page/:page)', to: 'tweets#index', as: 'tweets'
-      get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies', as: 'tweets_and_replies'
+    # Rutas relacionadas con tweets del usuario actual y los que sigue
+    # Get 'tweets', to: 'tweets#index_for_current_user'  # TweetsController#Index 
+    # GET /tweets => tweets#index mostrara los tweets del usuario junto con los tweets de los usuarios que sigue. se redirige aqui al loguearse o registrarse using redirect_to
+    # rutas en las que un current user puede interactuar con un determinado tweet
+    resources :tweets, only: [ :index, :show, :create, :update, :new ] do
+      member do
+        post 'retweet'
+        post 'quote'
+        post 'like'
+        delete 'unlike'
+        post 'bookmark'
+        get 'stats'
+        post 'replies', to: 'tweets#create_reply'
+      end
     end
   end
-
-  # Rutas relacionadas con tweets del usuario actual y los que sigue
-  # Get 'tweets', to: 'tweets#index_for_current_user'  # TweetsController#Index 
-  #GET /tweets => tweets#index mostrara los tweets del usuario junto con los tweets de los usuarios que sigue. se redirige aqui al loguearse o registrarse using redirect_to
-  # rutas en las que un current user puede interactuar con un determinado tweet
-  resources :tweets, only: [ :index, :show, :create, :update ] do
-    member do
-      post 'retweet'
-      post 'quote'
-      post 'like'
-      delete 'unlike'
-      post 'bookmark'
-      get 'stats'
-      post 'replies', to: 'tweets#create_reply'
-    end
-  end
-end                    
+end                 
                                   
-                                Prefix Verb   URI Pattern                                                                                       Controller#Action
+                                  Prefix Verb   URI Pattern                                                                                       Controller#Action
                                     root GET    /                                                                                                 home#index
                         api_user_session POST   /api/users/sign_in(.:format)                                                                      api/sessions#create_user_token
                 api_destroy_user_session DELETE /api/users/sign_out(.:format)                                                                     api/sessions#destroy_user_token
@@ -80,23 +82,24 @@ end
                                          PATCH  /api/users/:user_id/tweets/:id(.:format)                                                          api/tweets#update
                                          PUT    /api/users/:user_id/tweets/:id(.:format)                                                          api/tweets#update
 
-                    current_user_profile GET    /profile(.:format)                                                                                users#profile
-                             tweets_user GET    /user/:username/tweets(/page/:page)(.:format)                                                     tweets#index
-                 tweets_and_replies_user GET    /user/:username/tweets_and_replies(/page/:page)(.:format)                                         tweets#tweets_and_replies
-                                    user GET    /user/:username(.:format)                                                                         users#show
-                           retweet_tweet POST   /tweets/:id/retweet(.:format)                                                                     tweets#retweet
-                             quote_tweet POST   /tweets/:id/quote(.:format)                                                                       tweets#quote
-                              like_tweet POST   /tweets/:id/like(.:format)                                                                        tweets#like
-                            unlike_tweet DELETE /tweets/:id/unlike(.:format)                                                                      tweets#unlike
-                          bookmark_tweet POST   /tweets/:id/bookmark(.:format)                                                                    tweets#bookmark
-                             stats_tweet GET    /tweets/:id/stats(.:format)                                                                       tweets#stats
-                           replies_tweet POST   /tweets/:id/replies(.:format)                                                                     tweets#create_reply
-                                  tweets GET    /tweets(.:format)                                                                                 tweets#index
-                                         POST   /tweets(.:format)                                                                                 tweets#create
-                               new_tweet GET    /tweets/new(.:format)                                                                             tweets#new
-                                   tweet GET    /tweets/:id(.:format)                                                                             tweets#show
-                                         PATCH  /tweets/:id(.:format)                                                                             tweets#update
-                                         PUT    /tweets/:id(.:format)                                                                             tweets#update
+                web_current_user_profile GET    /web/profile(.:format)                                                                            web/users#profile
+                         tweets_web_user GET    /web/user/:username/tweets(/page/:page)(.:format)                                                 web/tweets#index
+             tweets_and_replies_web_user GET    /web/user/:username/tweets_and_replies(/page/:page)(.:format)                                     web/tweets#tweets_and_replies
+                                web_user GET    /web/user/:username(.:format)                                                                     web/users#show
+                       retweet_web_tweet POST   /web/tweets/:id/retweet(.:format)                                                                 web/tweets#retweet
+                         quote_web_tweet POST   /web/tweets/:id/quote(.:format)                                                                   web/tweets#quote
+                          like_web_tweet POST   /web/tweets/:id/like(.:format)                                                                    web/tweets#like
+                        unlike_web_tweet DELETE /web/tweets/:id/unlike(.:format)                                                                  web/tweets#unlike
+                      bookmark_web_tweet POST   /web/tweets/:id/bookmark(.:format)                                                                web/tweets#bookmark
+                         stats_web_tweet GET    /web/tweets/:id/stats(.:format)                                                                   web/tweets#stats
+                       replies_web_tweet POST   /web/tweets/:id/replies(.:format)                                                                 web/tweets#create_reply
+                              web_tweets GET    /web/tweets(.:format)                                                                             web/tweets#index
+                                         POST   /web/tweets(.:format)                                                                             web/tweets#create
+                           new_web_tweet GET    /web/tweets/new(.:format)                                                                         web/tweets#new
+                               web_tweet GET    /web/tweets/:id(.:format)                                                                         web/tweets#show
+                                         PATCH  /web/tweets/:id(.:format)                                                                         web/tweets#update
+                                         PUT    /web/tweets/:id(.:format)                                                                         web/tweets#update
+
 
 WHEN THE USER IS SIGNED IN
   redirect the user to TweetsController#Index using redirect_to
