@@ -321,6 +321,7 @@ module Devise
       end
 
       def authenticate!
+        puts request.headers
         token = request.headers.fetch('Authorization', '').split(' ').last
         payload = JsonWebToken.decode(token)
         success! User.find(payload['sub'])

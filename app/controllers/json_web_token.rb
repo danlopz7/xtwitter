@@ -8,6 +8,6 @@ class JsonWebToken < Api::ApiController
   end
 
   def self.decode(token)
-    decoded = JWT.decode(token, SECRET_KEY)[0]
+    JWT.decode(token, SECRET_KEY)[0]
   end
 end

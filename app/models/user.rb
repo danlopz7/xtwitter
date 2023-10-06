@@ -28,15 +28,11 @@ class User < ApplicationRecord
 
     has_many :replies, dependent: :destroy
 
-    validates :email, presence: true, uniqueness: { case_sensitive: false }
+    #validates :email, presence: true, uniqueness: { case_sensitive: false }
     validates :username, presence: true, uniqueness: { case_sensitive: false }
-    validates :password, presence: true, unless: :jwt_token_being_cleared?, length: { minimum: 12 }, format: { with: PASSWORD_REGEX, message: "must include at least 
+    validates :password, length: { minimum: 12 }, format: { with: PASSWORD_REGEX, message: "must include at least 
     1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character like !@/*-+_"}
     
-
-    def jwt_token_being_cleared?
-        jwt_token.nil?
-      end
       
     # Method to check if the user has retweeted a tweet
     def has_retweeted?(tweet)

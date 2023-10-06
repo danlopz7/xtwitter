@@ -1,67 +1,90 @@
 require 'rails_helper'
 
-describe 'Routing to Api::Tweets Controller' do 
+describe 'Routing to API namespace' do 
+
+    describe 'Api::Sessions Controller' do
+      it "routes to sign in" do
+        expect(post("/api/users/sign_in")).to route_to("api/sessions#create_user_token")
+      end
+  
+      it "routes to sign out" do
+        expect(delete("/api/users/sign_out")).to route_to("api/sessions#destroy_user_token")
+      end
+    end
+  
+    describe 'Api::Registration Controller' do
+      it "routes to sign up" do
+        expect(post("/api/users/sign_up")).to route_to("api/registration#create_user")
+      end
+    end
+  
+    describe 'Api::Tweets Controller' do 
+  
+      describe "User Tweets" do
+        it "routes to user's tweets with optional pagination" do
+          expect(get("/api/users/1/tweets")).to route_to("api/tweets#index", user_id: "1")
+        end
         
-    # CRUD Routes for Tweets
-    describe "Tweets CRUD operations defined" do
-        it "routes to /api/tweets to the tweets controller" do
-            expect(post("/api/tweets")).to route_to("api/tweets#create")
+        it "routes to user's tweets with specific page" do
+          expect(get("/api/users/1/tweets/page/2")).to route_to("api/tweets#index", user_id: "1", page: "2")
         end
-
-        it "routes to /api/tweets/:id via PUT to the tweets controller" do
-            expect(put("/api/tweets/1")).to route_to("api/tweets#update", id: "1")
+  
+        it "routes to user's tweets and replies with optional pagination" do
+          expect(get("/api/users/1/tweets_and_replies/page/2")).to route_to("api/tweets#tweets_and_replies", user_id: "1", page: "2")
         end
-
-        it "routes to /api/tweets/:id via PATCH to the tweets controller" do
-            expect(patch("/api/tweets/1")).to route_to("api/tweets#update", id: "1")
+      end
+  
+      describe "Tweets CRUD operations" do
+        it "routes to create a tweet" do
+          expect(post("/api/users/1/tweets")).to route_to("api/tweets#create", user_id: "1")
         end
-    end
-
-    # Member routes for Tweets
-    describe "Member actions on Tweets" do
-        it "routes to /api/tweets/:id/stats to the tweets controller" do
-            expect(get("/api/tweets/1/stats")).to route_to("api/tweets#stats", id: "1")
+  
+        it "routes to show a tweet" do
+          expect(get("/api/users/1/tweets/2")).to route_to("api/tweets#show", user_id: "1", id: "2")
         end
-
-        it "routes to /api/tweets/:id/like to the tweets controller" do
-            expect(post("/api/tweets/1/like")).to route_to("api/tweets#like", id: "1")
+  
+        it "routes to update a tweet via PUT" do
+          expect(put("/api/users/1/tweets/2")).to route_to("api/tweets#update", user_id: "1", id: "2")
         end
-
-        it "routes to /api/tweets/:id/unlike to the tweets controller" do
-            expect(delete("/api/tweets/1/unlike")).to route_to("api/tweets#unlike", id: "1")
+  
+        it "routes to update a tweet via PATCH" do
+          expect(patch("/api/users/1/tweets/2")).to route_to("api/tweets#update", user_id: "1", id: "2")
         end
-
-        it "routes to /api/tweets/:id/bookmark to the tweets controller" do
-            expect(post("/api/tweets/1/bookmark")).to route_to("api/tweets#bookmark", id: "1")
+      end
+  
+      describe "Member actions on Tweets" do
+        
+        it "routes to retweet a tweet" do
+          expect(post("/api/users/1/tweets/2/retweet")).to route_to("api/tweets#retweet", user_id: "1", id: "2")
         end
-
-        it "routes to /api/tweets/:id/retweet to the tweets controller" do
-            expect(post("/api/tweets/1/retweet")).to route_to("api/tweets#retweet", id: "1")
+  
+        it "routes to quote a tweet" do
+          expect(post("/api/users/1/tweets/2/quote")).to route_to("api/tweets#quote", user_id: "1", id: "2")
         end
-
-        it "routes to /api/tweets/:id/quote to the tweets controller" do
-            expect(post("/api/tweets/1/quote")).to route_to("api/tweets#quote", id: "1")
+  
+        it "routes to like a tweet" do
+          expect(post("/api/users/1/tweets/2/like")).to route_to("api/tweets#like", user_id: "1", id: "2")
         end
-    end
-
-    # Routes for User Tweets and Paginated Tweets
-    describe "User Tweets" do
-        it "routes to /api/users/:user_id/tweets(/page/:page) tweets with optional pagination to the tweet controller" do
-            expect(get("/api/users/1/tweets/page/2")).to route_to("api/tweets#index", user_id: "1", page: "2")
+  
+        it "routes to unlike a tweet" do
+          expect(delete("/api/users/1/tweets/2/unlike")).to route_to("api/tweets#unlike", user_id: "1", id: "2")
         end
-
-        it "routes to /api/users/:user_id/tweets_and_replies(/page/:page) tweets and replies with optional pagination to the tweet controller" do
-            expect(get("/api/users/1/tweets_and_replies/page/2")).to route_to("api/tweets#tweets_and_replies", user_id: "1", page: "2")
+  
+        it "routes to bookmark a tweet" do
+          expect(post("/api/users/1/tweets/2/bookmark")).to route_to("api/tweets#bookmark", user_id: "1", id: "2")
         end
-    end
-
-
-    describe 'Routing to Api::Tweets Controller' do 
-        # Nested resources under Tweets for Replies
-        describe "Replies under Tweets" do
-            it "routes to /api/tweets/:tweet_id/replies for replies under tweets to the tweets controller" do
-            expect(post("/api/tweets/1/replies")).to route_to("api/tweets#create_reply", tweet_id: "1")
-            end
+  
+        it "routes to tweet stats" do
+          expect(get("/api/users/1/tweets/2/stats")).to route_to("api/tweets#stats", user_id: "1", id: "2")
         end
+  
+      end
+  
+      describe "Replies under Tweets" do
+        it "routes to create a reply for a tweet" do
+          expect(post("/api/users/1/tweets/2/replies")).to route_to("api/tweets#create_reply", user_id: "1", id: "2")
+        end
+      end
+  
     end
 end

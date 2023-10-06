@@ -72,9 +72,9 @@ class Api::UsersController < Api::ApiController
       end
 
       # Only allow a list of trusted parameters through.
-      def
-        params.require(:user).permit(:name, :lastname, :username, :email, :password)
-      end
+    #   def
+    #     params.require(:user).permit(:name, :lastname, :username, :email, :password)
+    #   end
 end
 
 # set_article se ejecuta antes de las acciones show, edit, update y destroy. 

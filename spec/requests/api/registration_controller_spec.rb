@@ -14,6 +14,7 @@ RSpec.describe "API::Registration", type: :request do
     
         it "returns a JSON with authentication token" do
           post api_new_user_registration_path, params: { user: valid_attributes }
+          
           expect(response).to have_http_status(:ok)
           json = JSON.parse(response.body)
           expect(json['token']).to be_present
