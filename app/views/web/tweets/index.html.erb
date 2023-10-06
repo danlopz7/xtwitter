@@ -1,0 +1,15 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Tweets</h1>
+
+<div id="tweets">
+  <% @tweets.each do |tweet| %>
+    <p>
+      <%= tweet.content %> - <%= link_to tweet.user.username, user_path(tweet.user) %>
+      <br>
+      <%= link_to "View Tweet", tweet_path(tweet) %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New Tweet", new_tweet_path %>

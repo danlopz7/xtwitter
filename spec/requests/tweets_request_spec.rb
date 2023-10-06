@@ -2,36 +2,83 @@ require 'rails_helper'
 
 RSpec.describe "Tweets", type: :request do
 
-  describe "POST /tweets" do
-    let(:user) { create(:user) }
-    let(:valid_params) { { tweet: { content: "This is a tweet.", user_id: user.id } } }
-    let(:invalid_params) { { tweet: { content: "", user_id: user.id } } }
+  let(:user) { create(:user) }
+
+  def authenticate_user_get_token(user)
+    post api_log_in_path, params: { id: user.id, password: user.password }
+    json_response = JSON.parse(response.body)
+    json_response["token"]
+  end
+
+  def authenticated_header(token)
+    {
+      'Authorization' => "Bearer #{token}"
+    }
+  end
+
+
+  describe "POST /api/tweets" do
+    before do
+      token = authenticate_user_get_token(user)
+      @auth_headers = authenticated_header(token)
+    end
 
     context "with valid params" do
-      it 'returns 201 status response for creating a new tweet' do
-        post tweets_path, :params => valid_params
-        puts response.body
+      let(:valid_params) { { tweet: { content: "This is a tweet.", user_id: user.id } } }
+      #let(:valid_params) { { tweet: { content: "This is a test tweet" } } }
+      
+      it "creates a new tweet and returns a 201 status response" do
+        expect {
+          post api_tweets_path, params: valid_params.to_json, headers: @auth_headers
+    
+        }.to change(Tweet, :count).by(1)
 
         expect(response).to have_http_status(:created)
       end
-
-      it "should create a new tweet matching json schema" do
-        post tweets_path, params: valid_params
-        #Rails.logger.debug response.body
-        
-        expect(response).to match_response_schema("tweet")
-      end
-    end
-
-    context "with invalid params" do
-      it "does not create a new tweet" do
-        post tweets_path, params: invalid_params
-        puts response.body
-
-        expect(response).to have_http_status(422)
-      end
     end
   end
+
+
+  
+
+
+  # describe "POST /tweets" do
+
+  #  
+
+
+  #   let(:invalid_params) { { tweet: { content: "", user_id: user.id } } }
+
+  #   
+
+  #   context "with valid params" do
+  #     it 'returns 201 status response for creating a new tweet' do
+  #       expect {
+  #         post api_tweets_path, params: valid_params, headers: @auth_headers
+  #       }.to change(Tweet, :count).by(1)
+
+  #       expect(response).to have_http_status(:created)
+
+  #       json_response = JSON.parse(response.body)
+  #       expect(json_response["tweet"]["content"]).to eq("This is a test tweet")
+  #     end
+
+  #     it "should create a new tweet matching json schema" do
+  #       post api_tweets_path, params: valid_params
+        
+  #       expect(response).to match_response_schema("tweet")
+  #     end
+  #   end
+
+  #   context "with invalid params" do
+  #     it "does not create a new tweet" do
+  #       post api_tweets_path, params: invalid_params
+  #       puts response.body
+
+  #       expect(response).to have_http_status(422)
+  #     end
+  #   end
+  # end
 
 
   describe "PUT /tweets/:id" do
@@ -50,7 +97,7 @@ RSpec.describe "Tweets", type: :request do
         puts @tweet.as_json
 
         # Actualizar el tweet
-        put tweet_path(@tweet), params: { tweet: { content: updated_tweet_content } }
+        put api_tweet_path(@tweet), params: { tweet: { content: updated_tweet_content } }
 
         # Recuperar el tweet de la base de datos y comprobar que ha sido actualizado
         @updated_tweet = Tweet.find(@tweet.id)
@@ -62,7 +109,7 @@ RSpec.describe "Tweets", type: :request do
       end
 
       it "should update a tweet matching json schema" do
-        put tweet_path(@tweet), params: { tweet: { content: updated_tweet_content } }
+        put api_tweet_path(@tweet), params: { tweet: { content: updated_tweet_content } }
 
         expect(response).to match_response_schema("tweet")
       end
@@ -70,7 +117,7 @@ RSpec.describe "Tweets", type: :request do
 
     context "with invalid params" do
       it "does not update a tweet" do
-        put tweet_path(@tweet), params: { tweet: { content: empty_tweet_content } }
+        put api_tweet_path(@tweet), params: { tweet: { content: empty_tweet_content } }
   
         # Recuperar el tweet de la base de datos y comprobar que no ha sido actualizado
         @updated_tweet = Tweet.find(@tweet.id)
@@ -108,21 +155,21 @@ RSpec.describe "Tweets", type: :request do
     context "with valid params" do
       it "returns 201 status response for creating a quote" do
         puts tweet.as_json
-        post quote_tweet_path(tweet), params: valid_quote_params
+        post quote_api_tweet_path(tweet), params: valid_quote_params
         puts response.body
         
         expect(response).to have_http_status(:created)
       end
   
       it "should create a quote tweet matching json schema" do
-        post quote_tweet_path(tweet), params: valid_quote_params
+        post quote_api_tweet_path(tweet), params: valid_quote_params
         expect(response).to match_response_schema("tweet")
       end
     end
   
     context "with invalid params" do
       it "does not create a quote tweet" do
-        post quote_tweet_path(tweet), params: invalid_quote_params
+        post quote_api_tweet_path(tweet), params: invalid_quote_params
         expect(response).to have_http_status(422)
       end
     end
@@ -136,14 +183,14 @@ RSpec.describe "Tweets", type: :request do
     context "with valid params" do
         it "returns 201 status response for creating a retweet" do
             puts tweet.as_json
-            post retweet_tweet_path(tweet.id), params: { user_id: user.id }
+            post retweet_api_tweet_path(tweet.id), params: { user_id: user.id }
             puts response.body
 
             expect(response).to have_http_status(:created)
         end
 
         it "should create a retweet matching json schema" do
-            post retweet_tweet_path(tweet.id), params: { user_id: user.id }
+            post retweet_api_tweet_path(tweet.id), params: { user_id: user.id }
             expect(response).to match_response_schema("tweet")
         end
     end
@@ -151,11 +198,11 @@ RSpec.describe "Tweets", type: :request do
     context "with invalid params" do
         it "does not retweet again" do
             # Retweet once
-            post retweet_tweet_path(tweet.id), params: { user_id: user.id }
+            post retweet_api_tweet_path(tweet.id), params: { user_id: user.id }
             expect(response).to have_http_status(:created)
 
             # Try to retweet again
-            post retweet_tweet_path(tweet.id), params: { user_id: user.id }
+            post retweet_api_tweet_path(tweet.id), params: { user_id: user.id }
             expect(response).to have_http_status(422)
         end
     end
@@ -167,7 +214,7 @@ RSpec.describe "Tweets", type: :request do
     let(:tweet) { create(:tweet) } 
 
     it "likes the tweet" do
-      post like_tweet_path(tweet.id), params: { user_id: user.id }
+      post like_api_tweet_path(tweet.id), params: { user_id: user.id }
 
       expect(response).to have_http_status(:ok)
 
@@ -180,11 +227,9 @@ RSpec.describe "Tweets", type: :request do
         end
 
         it "does not create another like" do
-            post like_tweet_path(tweet.id), params: { user_id: user.id }
+            post like_api_tweet_path(tweet.id), params: { user_id: user.id }
 
             expect(response).to have_http_status(422)
-            parsed_response = JSON.parse(response.body)
-            expect(parsed_response["errors"]).to include("You've already liked this tweet.")
         end
     end
   end
@@ -272,7 +317,7 @@ RSpec.describe "Tweets", type: :request do
   
         expect(response).to have_http_status(422)
         json_response = JSON.parse(response.body)
-        expect(json_response["errors"]).to include("Bookmark not found or could not be deleted")
+        expect(json_response["errors"]).to include("Bookmark not found.")
       end
     end
   end

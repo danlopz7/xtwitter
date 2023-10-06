@@ -1,23 +1,30 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  devise_for :users, skip: [ :sessions, :registrations, :passwords ]
 
-  # Defines the root path route ("/")
-  # root "articles#index"
-  resources :tweets, only: [:create, :update], defaults: {format: :json} do
-    member do
-      get 'stats', to: 'tweets#stats'
-      post 'like', to: 'tweets#like'
-      delete 'unlike', to: 'tweets#unlike'
-      post 'bookmark', to: 'tweets#bookmark'
-      delete 'unbookmark', to: 'tweets#unbookmark'
-      post 'retweet', to: 'tweets#retweet'
-      post 'quote', to: 'tweets#quote'
+  namespace :api do
+    # Rutas para sesiones
+    post 'users/sign_in', to: 'sessions#create_user_token', as: 'user_session'
+    delete 'users/sign_out', to: 'sessions#destroy_user_token', as: 'destroy_user_session'
+
+    # Rutas para registro
+    post 'users/sign_up', to: 'registration#create_user', as: 'new_user_registration'
+
+    resources :users, only: [] do
+      get 'tweets(/page/:page)', to: 'tweets#index'
+      get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies'
+
+      resources :tweets, only: [ :show, :create, :update ] do
+        member do
+          post 'retweet'
+          post 'quote'
+          post 'like'
+          delete 'unlike'
+          post 'bookmark'
+          get 'stats'
+          post 'replies', to: 'tweets#create_reply'
+        end
+        #post 'replies', to: 'tweets#create_reply'
+      end
     end
-    resources :replies, only: [:create], to: 'replies#create'
-  end
-
-  resources :users, only: [] do
-    get 'tweets(/page/:page)', to: 'tweets#index'
-    get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies'
   end
 end

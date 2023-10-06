@@ -1,4 +1,4 @@
-class API::UsersController < Api::BaseApiController
+class Api::UsersController < Api::ApiController
 
     before_action :set_user, only: [:show, :edit, :update, :destroy]
 
@@ -26,6 +26,8 @@ class API::UsersController < Api::BaseApiController
 
     # POST /users or /users.json 
     def create 
+        # parameters:
+        # {authenticity_token=>[filtered] and the hash "user"=>{"email"=>'', "pass"=>''} received from the form 
         @user = User.new(user_params)
 
         respond_to do |format|
@@ -70,9 +72,9 @@ class API::UsersController < Api::BaseApiController
       end
 
       # Only allow a list of trusted parameters through.
-      def
-        params.require(:user).permit(:name, :lastname, :username, :email, :password)
-      end
+    #   def
+    #     params.require(:user).permit(:name, :lastname, :username, :email, :password)
+    #   end
 end
 
 # set_article se ejecuta antes de las acciones show, edit, update y destroy. 
