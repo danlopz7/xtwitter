@@ -85,6 +85,84 @@ describe 'Routing to API namespace' do
           expect(post("/api/users/1/tweets/2/replies")).to route_to("api/tweets#create_reply", user_id: "1", id: "2")
         end
       end
+    end
+
+
+    describe "root route" do
+      it "routes to home#index" do
+        expect(get: "/").to route_to("home#index")
+      end
+    end
   
+    describe "web namespace" do
+      it "routes to users#profile" do
+        expect(get: "web/profile").to route_to("web/users#profile")
+      end
+
+      it "routes to a specific user's tweets" do
+        expect(get: "web/user/johndoe/tweets").to route_to("web/tweets#index", username: "johndoe")
+      end
+  
+      it "routes to a specific user's tweets with pagination" do
+        expect(get: "web/user/johndoe/tweets?page=2").to route_to("web/tweets#index", username: "johndoe", page: "2")
+      end
+  
+      it "routes to a specific user's tweets and replies" do
+        expect(get: "web/user/johndoe/tweets_and_replies").to route_to("web/tweets#tweets_and_replies", username: "johndoe")
+      end
+  
+      it "routes to a specific user's tweets and replies with pagination" do
+        expect(get: "web/user/johndoe/tweets_and_replies?page=2").to route_to("web/tweets#tweets_and_replies", username: "johndoe", page: "2")
+      end
+  
+      describe "tweets resource" do
+        it "routes to tweets#index" do
+          expect(get: "web/tweets").to route_to("web/tweets#index")
+        end
+  
+        it "routes to tweets#show" do
+          expect(get: "web/tweets/1").to route_to("web/tweets#show", id: "1")
+        end
+  
+        it "routes to tweets#create" do
+          expect(post: "web/tweets").to route_to("web/tweets#create")
+        end
+  
+        it "routes to tweets#update" do
+          expect(put: "web/tweets/1").to route_to("web/tweets#update", id: "1")
+        end
+  
+        it "routes to tweets#new" do
+          expect(get: "web/tweets/new").to route_to("web/tweets#new")
+        end
+  
+        it "routes to tweets#retweet" do
+          expect(post: "web/tweets/1/retweet").to route_to("web/tweets#retweet", id: "1")
+        end
+  
+        it "routes to tweets#quote" do
+          expect(post: "web/tweets/1/quote").to route_to("web/tweets#quote", id: "1")
+        end
+  
+        it "routes to tweets#like" do
+          expect(post: "web/tweets/1/like").to route_to("web/tweets#like", id: "1")
+        end
+  
+        it "routes to tweets#unlike" do
+          expect(delete: "web/tweets/1/unlike").to route_to("web/tweets#unlike", id: "1")
+        end
+  
+        it "routes to tweets#bookmark" do
+          expect(post: "web/tweets/1/bookmark").to route_to("web/tweets#bookmark", id: "1")
+        end
+  
+        it "routes to tweets#stats" do
+          expect(get: "web/tweets/1/stats").to route_to("web/tweets#stats", id: "1")
+        end
+  
+        it "routes to tweets#create_reply" do
+          expect(post: "web/tweets/1/replies").to route_to("web/tweets#create_reply", id: "1")
+        end
+      end
     end
 end
