@@ -4,9 +4,10 @@ class Api::AuthenticationController < Api::ApiController
 
   def authenticate_user(user)
     return render json: {errors: ["Invalid user"]}, status: :unauthorized unless user
-    
+
     token = JsonWebToken.encode(sub: user.id)
-    user.update(jwt_token: "#{token}")
+    user.update_attribute(:jwt_token, "#{token}")
+    puts token
     token
   end
 end
