@@ -2,10 +2,13 @@ class Api::TweetsController < Api::ApiController
   include TweetStats
 
   before_action :set_tweet, except: [ :index, :tweets_and_replies, :create ]
-  before_action :authenticate_user!#, except: [:index, :show]
+  #before_action :authenticate_user_from_token!
+  #before_action :authenticate_user! #, except: [:index, :show]
 
-  # GET  /api/users/:user_id/tweets(/page/:page)
+  # GET  /api/users/:user_id/tweets(/page/:page) this route is no longer available, left it here just to compare it
   # muestra la lista de tweets de un determinado usuario
+  # GET  /api/tweets  api_tweets_path
+  # GET  /api/user/:username/tweets(/page/:page)  tweets_api_user_path
   def index
     user = User.find(params[:user_id])
     @tweets = user.tweets
@@ -14,6 +17,7 @@ class Api::TweetsController < Api::ApiController
 
 
   # GET  /api/users/:user_id/tweets_and_replies(/page/:page)
+  # GET  /api/user/:username/tweets_and_replies(/page/:page)  tweets_and_replies_api_user
   # muestra la lista de tweets y replies de un determinado usuario
   def tweets_and_replies
     user = User.find(params[:user_id])
@@ -23,12 +27,14 @@ class Api::TweetsController < Api::ApiController
 
 
   # GET  /api/users/:user_id/tweets/:id  api_user_tweet
+  # GET  /api/tweets/:id  api_tweet
   def show
     @tweet
   end
 
 
   # POST  /api/users/:user_id/tweets  api_user_tweets
+  # POST  /api/tweets 
   def create
     #@tweet = Tweet.new(tweet_params)
     @tweet = current_user.tweets.new(content: params[:tweet][:content])
@@ -40,6 +46,7 @@ class Api::TweetsController < Api::ApiController
 
 
   # PUT/PATCH  /api/users/:user_id/tweets/:id
+  # PATCH/PUT  /api/tweets/:id
   def update
     unless @tweet.update(tweet_params)
       render json: { errors: @tweet.errors.full_messages }, status: :unprocessable_entity
@@ -48,6 +55,7 @@ class Api::TweetsController < Api::ApiController
 
 
   # POST  /api/users/:user_id/tweets/:id/retweet  retweet_api_user_tweet
+  # POST  /api/tweets/:id/retweet  retweet_api_tweet
   def retweet
     @retweet = @tweet.retweet(current_user)
 
@@ -60,6 +68,7 @@ class Api::TweetsController < Api::ApiController
 
 
   # POST  /api/users/:user_id/tweets/:id/quote   quote_api_user_tweet
+  # POST  /api/tweets/:id/quote  quote_api_tweet
   def quote
     @quote_tweet = @tweet.quote_tweet(current_user, content: params[:content])
 
@@ -70,6 +79,7 @@ class Api::TweetsController < Api::ApiController
 
     
   # POST  /api/users/:user_id/tweets/:id/like  like_api_user_tweet
+  # POST  /api/tweets/:id/like  like_api_tweet
   def like
     @like = @tweet.like(current_user)
 
@@ -80,6 +90,7 @@ class Api::TweetsController < Api::ApiController
 
 
   # DELETE /api/users/:user_id/tweets/:id/unlike  unlike_api_user_tweet
+  # DELETE /api/tweets/:id/unlike  unlike_api_tweet
   def unlike
     @unlike = Like.find_by(user_id: current_user, tweet_id: @tweet.id)
     unless @unlike&.destroy
@@ -89,6 +100,7 @@ class Api::TweetsController < Api::ApiController
 
 
   # POST /api/users/:user_id/tweets/:id/bookmark  bookmark_api_user_tweet
+  # POST  /api/tweets/:id/bookmark  bookmark_api_tweet
   def bookmark
     #user = User.find(params[:user_id])
     @bookmark = @tweet.bookmark(current_user)
@@ -100,6 +112,7 @@ class Api::TweetsController < Api::ApiController
 
 
   # GET  /api/users/:user_id/tweets/:id/stats  stats_api_user_tweet
+  # GET  /api/tweets/:id/stats  stats_api_tweet
   def stats
     @stats_response = get_stats(@tweet)
     #render json: { stats: response }, status: :ok
@@ -107,6 +120,7 @@ class Api::TweetsController < Api::ApiController
 
 
   # POST /api/users/:user_id/tweets/:id/replies  replies_api_user_tweet
+  # POST /api/tweets/:id/replies  replies_api_tweet
   def create_reply
     @reply = Reply.new(content: [:reply][:content])
     @reply.user = current_user

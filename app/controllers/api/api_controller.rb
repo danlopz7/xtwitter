@@ -1,4 +1,4 @@
-class Api::ApiController < ApplicationController
+class Api::ApiController < ActionController::API
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
@@ -7,11 +7,12 @@ class Api::ApiController < ApplicationController
   # the authenticity token thats created every time you make a form and submit that
   # because the way that the rails session cookies need to be secured is with crossside
   # scripting in mind
-  skip_before_action :verify_authenticity_token
+  #before_action :verify_authenticity_token
   
   before_action :set_default_format
   #before_action :authenticate_token!
-  #before_action :authenticate_user!
+  before_action :authenticate_user!
+  #before_action { authenticate_user!( force: true ) }
 
 
   private

@@ -1,4 +1,6 @@
 class Api::SessionsController < Api::AuthenticationController
+
+  skip_before_action :authenticate_user!
   
   def create_user_token
     user = User.find_by(email: sign_in_params[:email])

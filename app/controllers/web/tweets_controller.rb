@@ -3,21 +3,29 @@ class Web::TweetsController < Web::WebController
 
     # Como la clase padre ya tiene un `before_action` para `authenticate_user!`, 
     # sólo especificamos `:index` como excepción.
-    skip_before_action :authenticate_user!, only: [:index]
+    before_action :authenticate_user! #, only: [:index]
     before_action :set_tweet, only: %i[show edit update retweet quote like unlike bookmark stats create_reply]
     
 
     # GET  /web/tweets  web_tweets_path
     # GET  /web/user/:username/tweets(/page/:page)  tweets_web_user_path
+
     def index
+        page = params.fetch(:page, 0).to_i
+        page_size = 10
+
         if params[:username]
             user = User.find_by(username: params[:username])
+            #verificar esta linea
             @tweets = user.tweets.includes(:author).page(params[:page]).per(10).order(created_at: :desc)
-        else user_signed_in?
-            @tweets = current_user.feed.includes(:author).page(params[:page]).per(10).order(created_at: :desc)
-        end
-    
-        render_response('web/tweets/index')
+        else
+            page = params.fetch(:page, 0).to_i
+            page_size = 10
+
+            @tweets = current_user.tweets.order(created_at: :desc).offset(page * page_size).limit(page_size)
+            #@tweets = current_user.feed.includes(:author).page(params[:page]).per(10).order(created_at: :desc)
+        end 
+        #render_response('web/tweets/index')
     end
 
 

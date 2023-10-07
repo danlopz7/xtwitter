@@ -1,6 +1,6 @@
 class Api::AuthenticationController < Api::ApiController
 
-  #skip_before_action :authenticate_user!
+  skip_before_action :authenticate_user!
 
   def authenticate_user(user)
     return render json: {errors: ["Invalid user"]}, status: :unauthorized unless user
