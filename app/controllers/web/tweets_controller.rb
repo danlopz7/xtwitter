@@ -1,17 +1,13 @@
 class Web::TweetsController < Web::WebController
     include TweetStats
 
-    # Como la clase padre ya tiene un `before_action` para `authenticate_user!`, 
-    # sólo especificamos `:index` como excepción.
-    before_action :authenticate_user! #, only: [:index]
+    before_action :authenticate_user!
     before_action :set_tweet, only: %i[show edit update retweet quote like unlike bookmark stats create_reply]
     
-
     # GET  /web/tweets  web_tweets_path
     # GET  /web/user/:username/tweets(/page/:page)  tweets_web_user_path
     def index
         @current_page = params.fetch(:page, 0).to_i
-        #page = params.fetch(:page, 0).to_i
         page_size = 3
 
         if params[:username]
