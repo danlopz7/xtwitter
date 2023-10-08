@@ -1,8 +1,14 @@
 <p style="color: green"><%= notice %></p>
 
-<h1>User: <%= @user.username %></h1>
-<p>Email: <%= @user.email %></p>
+<h1>Tweets</h1>
+<%= render 'user_details' %>
+
+<h2>Tweets</h2>
+
+<% @user.tweets.each do |tweet| %>
+  <p><%= tweet.content %></p>
+<% end %>
+
 <p>
-  <%= link_to "Edit this user", edit_user_path(@user) %> |
-  <%= link_to "Back to all users", users_path %>
+  <%= link_to "Back to all users", web_tweets_path %>
 </p>

@@ -5,9 +5,8 @@
 <% if user_signed_in? %>
     <p>Welcome <%= current_user.username %></p>
     <%= link_to "Logout", destroy_user_session_path, :method => :delete %>
-     <%# <%= link_to "New tweet", new_tweet_path %>
-
-     <%= link_to "New tweet", new_web_tweet_path %>
+    <%= link_to "New tweet", new_web_tweet_path %>
+    <%= link_to "Profile", web_current_user_profile_path %>
 
     <h1>Tweets</h1>
     <%= render partial: 'web/tweets/tweet', collection: @tweets_with_stats, as: :tweet_data %>

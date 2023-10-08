@@ -51,7 +51,7 @@ Rails.application.routes.draw do
     # Rutas relacionadas con usuarios específicos
     # GET /user/:username Should display the personal information of the user: 
     # !resource :user porque asi dice en la practica "user".
-    resources :user, only: ["show"], param: :username, controller: "users" do
+    resources :user, only: ["show", "edit"], param: :username, controller: "users" do
       #get 'user/:username', to: 'users#show'
       member do
         # estas rutas mostraran los tweets y replies de un usuario especifico
