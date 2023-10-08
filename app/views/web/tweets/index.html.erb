@@ -8,5 +8,15 @@
      <%# <%= link_to "New tweet", new_tweet_path %>
     <h1>Tweets</h1>
     <%= render partial: 'web/tweets/tweet', collection: @tweets_with_stats, as: :tweet_data %>
-    <%= link_to 'Next', web_tweets_path(page: 1), id: 'load-more', remote: true %>
+
+    <% # Si la página es mayor que 0, muestra el enlace 'Previous' %>
+    <% if @current_page > 0 %>
+      <%= link_to 'Previous', web_tweets_path(page: @current_page - 1), id: 'load-prev', remote: true %>
+    <% end %>
+
+    <% # Si hay más páginas, muestra el enlace 'Next' %>
+    <% if @more_pages %>
+      <%= link_to 'Next', web_tweets_path(page: @current_page + 1), id: 'load-more', remote: true %>
+    <% end %>
+
 <% end %>

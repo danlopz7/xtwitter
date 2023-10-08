@@ -10,7 +10,8 @@ class Web::TweetsController < Web::WebController
     # GET  /web/tweets  web_tweets_path
     # GET  /web/user/:username/tweets(/page/:page)  tweets_web_user_path
     def index
-        page = params.fetch(:page, 0).to_i
+        @current_page = params.fetch(:page, 0).to_i
+        #page = params.fetch(:page, 0).to_i
         page_size = 3
 
         if params[:username]
@@ -20,16 +21,15 @@ class Web::TweetsController < Web::WebController
         else
             followee_ids = current_user.followees.pluck(:id)
             user_ids = followee_ids << current_user.id
-            @tweets = Tweet.where(user_id: user_ids).order(created_at: :desc).offset(page * page_size).limit(page_size)
-            
+            @tweets = Tweet.where(user_id: user_ids).order(created_at: :desc).offset(@current_page * page_size).limit(page_size)
             @tweets_with_stats = @tweets.map do |tweet|
                 {
                   tweet: tweet,
                   stats: get_stats(tweet)
-                  
                 }
             end
         end 
+        @more_pages = Tweet.where(user_id: user_ids).count > (@current_page + 1) * page_size
     end
 
 
