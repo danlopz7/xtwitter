@@ -11,7 +11,9 @@ module TweetStats
             bookmarks: self.get_bookmarks(id).count,
         }
 
-        { "tweet_#{id}" => stats }
+        #stats
+
+        #{ "tweet_#{id}" => stats }
     end
 
     private

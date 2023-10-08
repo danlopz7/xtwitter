@@ -9,23 +9,26 @@ class Web::TweetsController < Web::WebController
 
     # GET  /web/tweets  web_tweets_path
     # GET  /web/user/:username/tweets(/page/:page)  tweets_web_user_path
-
     def index
         page = params.fetch(:page, 0).to_i
-        page_size = 10
+        page_size = 3
 
         if params[:username]
             user = User.find_by(username: params[:username])
             #verificar esta linea
-            @tweets = user.tweets.includes(:author).page(params[:page]).per(10).order(created_at: :desc)
+            @tweets = user.tweets.includes(:author).page(params[:page]).per(page_size).order(created_at: :desc)
         else
-            page = params.fetch(:page, 0).to_i
-            page_size = 10
-
-            @tweets = current_user.tweets.order(created_at: :desc).offset(page * page_size).limit(page_size)
             #@tweets = current_user.feed.includes(:author).page(params[:page]).per(10).order(created_at: :desc)
+            @tweets = current_user.tweets.order(created_at: :desc).offset(page * page_size).limit(page_size)
+            
+            @tweets_with_stats = @tweets.map do |tweet|
+                {
+                  tweet: tweet,
+                  stats: get_stats(tweet)
+                  
+                }
+            end
         end 
-        #render_response('web/tweets/index')
     end
 
 

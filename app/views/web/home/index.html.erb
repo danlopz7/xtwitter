@@ -2,36 +2,11 @@
 
 <div>
     <h1>Random Tweets</h1>
-    
-
     <%= link_to "Sign Up", new_user_registration_path %>
     <%= link_to "Login", new_user_session_path %>
 
   <div class="tweets", id="tweets">
-    <!-- Renderiza 10 tweets al azar -->
     <h6>HELLO</h6>
-    <div id="tweets">
-    <% @random_tweets.each do |tweet| %>
-      <p> <%= tweet.content %></p>
-      <p> User: #@<%= tweet.user.username %></p>
-
-      
-
-      <%= render tweet %>
-      <p>
-        <%= link_to "Show this tweet", tweet %>
-      </p>
-    <% end %>
+    <%= render partial: 'web/tweets/tweet', collection: @tweets_with_stats, as: :tweet_data %>
   </div>
-
-
-    <%= link_to 'Next', web_tweets_path(page: 1), id: 'load-more', remote: true %>
-  </div>
-
 </div>
-
-<%=tweet.id%>
-  
-
-
-
