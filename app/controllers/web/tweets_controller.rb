@@ -33,10 +33,12 @@ class Web::TweetsController < Web::WebController
     def create
         @tweet = current_user.tweets.build(tweet_params)
 
+
       if @tweet.save
         redirect_to web_tweets_path, notice: "Tweet was successfully created."
       else
-        render_response('web/tweets/new')
+        flash[:alert] = @tweet.errors.full_messages.to_sentence
+        render 'web/tweets/new'
       end
     end
 
@@ -59,7 +61,6 @@ class Web::TweetsController < Web::WebController
     #  GET  /web/tweets/new  new_web_tweet         
     def new
         @tweet = current_user.tweets.new
-      render_response('web/tweets/new')
     end
 
 

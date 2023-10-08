@@ -42,7 +42,7 @@ gem "bootsnap", require: false
 gem "devise"
 gem "jwt"
 
-gem 'bootstrap', '~> 5.3.2'
+gem 'bootstrap', '~> 5.3.1'
 gem 'sassc-rails'
 gem 'jquery-rails'
 gem "font-awesome-sass", '~> 6.4.2'
