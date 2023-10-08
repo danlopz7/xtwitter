@@ -18,8 +18,9 @@ class Web::TweetsController < Web::WebController
             #verificar esta linea
             @tweets = user.tweets.includes(:author).page(params[:page]).per(page_size).order(created_at: :desc)
         else
-            #@tweets = current_user.feed.includes(:author).page(params[:page]).per(10).order(created_at: :desc)
-            @tweets = current_user.tweets.order(created_at: :desc).offset(page * page_size).limit(page_size)
+            followee_ids = current_user.followees.pluck(:id)
+            user_ids = followee_ids << current_user.id
+            @tweets = Tweet.where(user_id: user_ids).order(created_at: :desc).offset(page * page_size).limit(page_size)
             
             @tweets_with_stats = @tweets.map do |tweet|
                 {
