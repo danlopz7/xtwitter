@@ -44,16 +44,16 @@ class Web::TweetsController < Web::WebController
 
     # GET  /web/tweets/:id  web_tweet   
     def show
-        render_response('web/tweets/show')
+        render ('web/tweets/show')
     end
 
 
     # PATCH/PUT  /web/tweets/:id
     def update
         if @tweet.update(tweet_params)
-            render_response('web/tweets/show')
+            render ('web/tweets/show')
         else
-            render_response('web/tweets/edit')
+            render ('web/tweets/edit')
         end
     end
 
@@ -110,6 +110,21 @@ class Web::TweetsController < Web::WebController
             redirect_to web_tweet_path(@tweet), notice: "Tweet was successfully liked."
         end
     end
+
+    def like
+        response = {}
+        if current_user.likes.find_by(tweet_id: @tweet.id) 
+          response[:status] = 'error'
+          response[:message] = "You've already liked this tweet."
+        else
+          current_user.likes.create!(tweet_id: @tweet.id)
+          response[:status] = 'success'
+          response[:new_like_count] = current_user.likes.where(tweet_id: @tweet.id).count
+        end
+      
+        render json: response
+    end
+      
 
 
     # POST  /web/tweets/:id/quote  quote_web_tweet

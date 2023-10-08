@@ -1,6 +1,8 @@
 <div class="tweet">
   <div class="tweet-header">
-    <strong>User: @<%= tweet_data[:tweet].user.username %></strong>
+    
+    <strong>User: <%= link_to "@#{tweet_data[:tweet].user.username}", web_user_path(tweet_data[:tweet].user.username) %></strong>
+
   </div>
   <div class="tweet-content">
     <p> content: <%= tweet_data[:tweet].content %></p>
@@ -9,6 +11,7 @@
       <p>Retweets: <%= tweet_data[:stats][:retweets] %></p>
       <p>Quotes: <%= tweet_data[:stats][:quotes] %></p>
       <p>Likes: <%= tweet_data[:stats][:likes] %></p>
+      <%= link_to "Likes: #{tweet_data[:stats][:likes]}", like_web_tweet_path(tweet_data[:tweet].id), method: :post, remote: true, class: 'like-link', data: { tweet_id: tweet_data[:tweet].id } %>
       <p>Bookmarks: <%= tweet_data[:stats][:bookmarks] %></p>
     </div>
 

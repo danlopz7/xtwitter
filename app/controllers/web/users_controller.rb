@@ -1,15 +1,8 @@
 class Web::UsersController < Web::WebController
 
-  # def index
-  #   @tweets = Tweet.all
-  #   render_response('web/tweets/index')
-  # end
-
-  # GET  /web/user/:username  web_user_path
+  # GET  /web/user/:username  web_user
   def show
     @user = User.find_by(username: params[:username])
-    
-
   end
 
   # GET  /web/profile  web_current_user_profile
