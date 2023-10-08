@@ -1,15 +1,34 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <%= csrf_meta_tags %>
     <title>Xwitter</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application" %>
+    <%=  javascript_tag 'application', 'data-turbolinks-track': 'reload' %>
+    
+    
+
   </head>
 
   <body>
+    
+
+    <div class="alert-dialog">
+      <%= yield :notices%>
+    </div>
+
+    <div class="content">
+      <%= yield :body%>
+    </div>
+
+    <div class="footer">
+      <%= yield :footer%>
+    </div>
+
     <%= yield %>
   </body>
 </html>

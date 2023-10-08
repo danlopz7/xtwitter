@@ -1,0 +1,25 @@
+<div class="tweet">
+  <div class="tweet-header">
+    
+    <strong>User: <%= link_to "@#{tweet_data[:tweet].user.username}", web_user_path(tweet_data[:tweet].user.username) %></strong>
+
+  </div>
+  <div class="tweet-content">
+    <p> content: <%= tweet_data[:tweet].content %></p>
+      <!-- Estadísticas del tweet -->
+    <div class="tweet-stats">
+      <p>Retweets: <%= tweet_data[:stats][:retweets] %></p>
+      <p>Quotes: <%= tweet_data[:stats][:quotes] %></p>
+      <p>Likes: <%= tweet_data[:stats][:likes] %></p>
+      <%= link_to "Likes: #{tweet_data[:stats][:likes]}", like_web_tweet_path(tweet_data[:tweet].id), method: :post, remote: true, class: 'like-link', data: { tweet_id: tweet_data[:tweet].id } %>
+      <p>Bookmarks: <%= tweet_data[:stats][:bookmarks] %></p>
+    </div>
+
+    
+  </div>
+  <div class="tweet-footer">
+    <div class="text-muted"><small> Posted: <%= l tweet_data[:tweet].created_at%></small></div>  
+    <%# <span>Posted: <%= tweet_data[:tweet].created_at.strftime('%Y-%m-%d %H:%M:%S') %></span> <br >
+  </div>
+ 
+</div>

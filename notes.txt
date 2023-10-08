@@ -1,0 +1,299 @@
+Rails.application.routes.draw do
+  devise_for :users, skip: [ :sessions, :registrations, :passwords ]
+
+  root to: 'home#index' # Esta es tu ruta raíz que manejará los comportamientos basados en la autenticación.
+
+  namespace :api do
+    # Rutas para sesiones
+    post 'users/sign_in', to: 'sessions#create_user_token', as: 'user_session'
+    delete 'users/sign_out', to: 'sessions#destroy_user_token', as: 'destroy_user_session'
+
+    # Rutas para registro
+    post 'users/sign_up', to: 'registration#create_user', as: 'new_user_registration'
+
+    resources :users, only: [] do
+      get 'tweets(/page/:page)', to: 'tweets#index'
+      get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies'
+
+      resources :tweets, only: [ :show, :create, :update ] do
+        member do
+          post 'retweet'
+          post 'quote'
+          post 'like'
+          delete 'unlike'
+          post 'bookmark'
+          get 'stats'
+          post 'replies', to: 'tweets#create_reply'
+        end
+        #post 'replies', to: 'tweets#create_reply'
+      end
+    end
+  end
+
+  namespace :web do
+    # Ruta del perfil del usuario actual
+    get 'profile', to: 'users#profile', as: 'current_user_profile'
+  
+    # Rutas relacionadas con usuarios específicos
+    # GET /user/:username Should display the personal information of the user: 
+    resources :user, only: ["show"], param: :username, controller: "users" do
+      #get 'user/:username', to: 'users#show'
+      member do
+        # estas rutas mostraran los tweets y replies de un usuario especifico
+        get 'tweets(/page/:page)', to: 'tweets#index', as: 'tweets'
+        get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies', as: 'tweets_and_replies'
+      end
+    end
+
+    # Rutas relacionadas con tweets del usuario actual y los que sigue
+    # Get 'tweets', to: 'tweets#index_for_current_user'  # TweetsController#Index 
+    # GET /tweets => tweets#index mostrara los tweets del usuario junto con los tweets de los usuarios que sigue. se redirige aqui al loguearse o registrarse using redirect_to
+    # rutas en las que un current user puede interactuar con un determinado tweet
+    resources :tweets, only: [ :index, :show, :create, :update, :new ] do
+      member do
+        post 'retweet'
+        post 'quote'
+        post 'like'
+        delete 'unlike'
+        post 'bookmark'
+        get 'stats'
+        post 'replies', to: 'tweets#create_reply'
+      end
+    end
+  end
+end                 
+                                  
+                                    root GET    /                                                                                                 home#index
+                        api_user_session POST   /api/users/sign_in(.:format)                                                                      api/sessions#create_user_token
+                api_destroy_user_session DELETE /api/users/sign_out(.:format)                                                                     api/sessions#destroy_user_token
+               api_new_user_registration POST   /api/users/sign_up(.:format)                                                                      api/registration#create_user
+                                         GET    /api/users/:user_id/tweets(/page/:page)(.:format)                                                 api/tweets#index
+                                         GET    /api/users/:user_id/tweets_and_replies(/page/:page)(.:format)                                     api/tweets#tweets_and_replies
+                  retweet_api_user_tweet POST   /api/users/:user_id/tweets/:id/retweet(.:format)                                                  api/tweets#retweet
+                    quote_api_user_tweet POST   /api/users/:user_id/tweets/:id/quote(.:format)                                                    api/tweets#quote
+                     like_api_user_tweet POST   /api/users/:user_id/tweets/:id/like(.:format)                                                     api/tweets#like
+                   unlike_api_user_tweet DELETE /api/users/:user_id/tweets/:id/unlike(.:format)                                                   api/tweets#unlike
+                 bookmark_api_user_tweet POST   /api/users/:user_id/tweets/:id/bookmark(.:format)                                                 api/tweets#bookmark
+                    stats_api_user_tweet GET    /api/users/:user_id/tweets/:id/stats(.:format)                                                    api/tweets#stats
+                  replies_api_user_tweet POST   /api/users/:user_id/tweets/:id/replies(.:format)                                                  api/tweets#create_reply
+                         api_user_tweets POST   /api/users/:user_id/tweets(.:format)                                                              api/tweets#create
+                          api_user_tweet GET    /api/users/:user_id/tweets/:id(.:format)                                                          api/tweets#show
+                                         PATCH  /api/users/:user_id/tweets/:id(.:format)                                                          api/tweets#update
+                                         PUT    /api/users/:user_id/tweets/:id(.:format)                                                          api/tweets#update
+                                         
+                web_current_user_profile GET    /web/profile(.:format)                                                                            web/users#profile
+                         tweets_web_user GET    /web/user/:username/tweets(/page/:page)(.:format)                                                 web/tweets#index
+             tweets_and_replies_web_user GET    /web/user/:username/tweets_and_replies(/page/:page)(.:format)                                     web/tweets#tweets_and_replies
+                                web_user GET    /web/user/:username(.:format)                                                                     web/users#show
+                       retweet_web_tweet POST   /web/tweets/:id/retweet(.:format)                                                                 web/tweets#retweet
+                         quote_web_tweet POST   /web/tweets/:id/quote(.:format)                                                                   web/tweets#quote
+                          like_web_tweet POST   /web/tweets/:id/like(.:format)                                                                    web/tweets#like
+                        unlike_web_tweet DELETE /web/tweets/:id/unlike(.:format)                                                                  web/tweets#unlike
+                      bookmark_web_tweet POST   /web/tweets/:id/bookmark(.:format)                                                                web/tweets#bookmark
+                         stats_web_tweet GET    /web/tweets/:id/stats(.:format)                                                                   web/tweets#stats
+                       replies_web_tweet POST   /web/tweets/:id/replies(.:format)                                                                 web/tweets#create_reply
+                              web_tweets GET    /web/tweets(.:format)                                                                             web/tweets#index
+                                         POST   /web/tweets(.:format)                                                                             web/tweets#create
+                           new_web_tweet GET    /web/tweets/new(.:format)                                                                         web/tweets#new
+                               web_tweet GET    /web/tweets/:id(.:format)                                                                         web/tweets#show
+                                         PATCH  /web/tweets/:id(.:format)                                                                         web/tweets#update
+                                         PUT    /web/tweets/:id(.:format)                                                                         web/tweets#update
+
+WHEN THE USER IS SIGNED IN
+  redirect the user to TweetsController#Index using redirect_to
+
+  GET /tweets tweets#index  this route should 
+    show a feed like interface that shows the tweets from the user and the tweets from the accounts the signed in user follows all of them 
+  
+# GET /user/:username Should display the personal information of the user
+
+
+  Rails.application.routes.draw do
+  devise_for :users, skip: [ :sessions, :registrations, :passwords ]
+
+  namespace :api do
+    # Rutas para sesiones
+    post 'users/sign_in', to: 'sessions#create_user_token', as: 'user_session'
+    delete 'users/sign_out', to: 'sessions#destroy_user_token', as: 'destroy_user_session'
+
+    # Rutas para registro
+    post 'users/sign_up', to: 'registration#create_user', as: 'new_user_registration'
+
+    resources :users, only: [] do
+      get 'tweets(/page/:page)', to: 'tweets#index'
+      get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies'
+      
+      resources :tweets, only: [ :show, :create, :update ] do
+        member do
+          post 'retweet'
+          post 'quote'
+          post 'like'
+          delete 'unlike'
+          post 'bookmark'
+          get 'stats'
+          post 'replies', to: 'tweets#create_reply'
+        end
+      end
+    end
+  end
+end				                    
+                              
+                                  Prefix Verb           URI Pattern                                                      Controller#Action
+                        api_user_session POST   /api/users/sign_in(.:format)                                        api/sessions#create_user_token
+                api_destroy_user_session DELETE /api/users/sign_out(.:format)                                       api/sessions#destroy_user_token
+               api_new_user_registration POST   /api/users/sign_up(.:format)                                        api/registration#create_user
+                                         GET    /api/users/:user_id/tweets(/page/:page)(.:format)                   api/tweets#index
+                                         GET    /api/users/:user_id/tweets_and_replies(/page/:page)(.:format)       api/tweets#tweets_and_replies
+                  retweet_api_user_tweet POST   /api/users/:user_id/tweets/:id/retweet(.:format)                    api/tweets#retweet
+                    quote_api_user_tweet POST   /api/users/:user_id/tweets/:id/quote(.:format)                      api/tweets#quote
+                     like_api_user_tweet POST   /api/users/:user_id/tweets/:id/like(.:format)                       api/tweets#like
+                   unlike_api_user_tweet DELETE /api/users/:user_id/tweets/:id/unlike(.:format)                     api/tweets#unlike
+                 bookmark_api_user_tweet POST   /api/users/:user_id/tweets/:id/bookmark(.:format)                   api/tweets#bookmark
+                    stats_api_user_tweet GET    /api/users/:user_id/tweets/:id/stats(.:format)                      api/tweets#stats
+                  replies_api_user_tweet POST   /api/users/:user_id/tweets/:id/replies(.:format)                    api/tweets#create_reply
+                         api_user_tweets POST   /api/users/:user_id/tweets(.:format)                                api/tweets#create
+                          api_user_tweet GET    /api/users/:user_id/tweets/:id(.:format)                            api/tweets#show
+                                         PATCH  /api/users/:user_id/tweets/:id(.:format)                            api/tweets#update
+                                         PUT    /api/users/:user_id/tweets/:id(.:format)                            api/tweets#update                              
+                              
+   
+Los tweets ahora están anidados directamente bajo resources :users, esto significa que el acceso a tweets y
+acciones de tweets requerirá un user_id en la URL.
+Eliminado el bloque collection porque ya no es necesario con esta estructura de anidación.
+Las rutas para tweets_and_replies se mantienen en el nivel de miembro de users porque se refieren a una 
+colección de tweets asociados con un usuario específico.
+Esto debería ayudar a evitar confusiones en el enrutamiento y en la lógica del controlador. Recuerda ajustar
+ tus controladores y vistas para reflejar estos cambios en las rutas. Por ejemplo, en tu controlador de tweets,
+ ahora tendrás acceso a params[:user_id] para referenciar al usuario y params[:id] para referenciar al tweet,
+  cuando corresponda.                             
+
+=================================================================================================
+resources :users do
+      member do
+        get 'tweets(/page/:page)', to: 'tweets#index'
+        get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies'
+      end
+      collection do
+        resources :tweets, only: [:create, :update, :show] do
+        member do
+            post 'retweet', to: 'tweets#retweet'
+            post 'quote', to: 'tweets#quote'
+            post 'like', to: 'tweets#like'
+            delete 'unlike', to: 'tweets#unlike'
+            post 'bookmark', to: 'tweets#bookmark'
+            get 'stats', to: 'tweets#stats'
+          end
+          post 'replies', to: 'tweets#create_reply'
+        end
+      end
+    end
+  end
+end
+
+Logica detras de las rutas:
+
+ GET    /api/users/:id/tweets(/page/:page)(.:format) api/tweets#index
+                                         GET    /api/users/:id/tweets_and_replies(/page/:page)(.:format) api/tweets#tweets_and_replies
+                       retweet_api_tweet POST   /api/users/tweets/:id/retweet(.:format) api/tweets#retweet
+                         quote_api_tweet POST   /api/users/tweets/:id/quote(.:format) api/tweets#quote
+                          like_api_tweet POST   /api/users/tweets/:id/like(.:format)  api/tweets#like
+                        unlike_api_tweet DELETE /api/users/tweets/:id/unlike(.:format) api/tweets#unlike
+                      bookmark_api_tweet POST   /api/users/tweets/:id/bookmark(.:format) api/tweets#bookmark
+                         stats_api_tweet GET    /api/users/tweets/:id/stats(.:format)	 api/tweets#stats
+                       api_tweet_replies POST   /api/users/tweets/:tweet_id/replies(.:format) 	api/tweets#create_reply
+                              api_tweets POST   /api/users/tweets(.:format)	api/tweets#create
+                               api_tweet GET    /api/users/tweets/:id(.:format) 	api/tweets#show
+                                         PATCH  /api/users/tweets/:id(.:format)		api/tweets#update
+                                         PUT    /api/users/tweets/:id(.:format) 	api/tweets#update
+
+                               api_users GET    /api/users(.:format) 	api/users#index
+                                         POST   /api/users(.:format)	 api/users#create
+                            new_api_user GET    /api/users/new(.:format) api/users#new
+                           edit_api_user GET    /api/users/:id/edit(.:format) 	api/users#edit
+                                api_user GET    /api/users/:id(.:format) 	api/users#show
+                                         PATCH  /api/users/:id(.:format) 	api/users#update
+                                         PUT    /api/users/:id(.:format) 	api/users#update
+                                         DELETE /api/users/:id(.:format)	 api/users#destroy
+
+		api_user_session POST   /api/users/sign_in(.:format)  		api/sessions#create_user_token
+                api_destroy_user_session DELETE /api/users/sign_out(.:format)   api/sessions#destroy_user_token
+               api_new_user_registration POST   /api/users/sign_up(.:format) 	api/registration#create_user
+
+
+En el código que proporcionaste, tienes resources :tweets dentro del bloque collection de resources :users.
+ Esto significa que las rutas generadas para los tweets no estarán relacionadas con un usuario específico 
+ en la URL.
+
+Para aclararlo, con tu configuración actual, las rutas generadas para los tweets serían algo así:
+
+/api/users/tweets/1             # muestra el tweet con id 1
+/api/users/tweets               # crea un nuevo tweet
+/api/users/tweets/1/stats       # obtiene estadísticas para el tweet con id 1
+# ... y así sucesivamente para las otras acciones de tweets
+
+
+Observa que no hay ningún ID de usuario en esas URL. Esencialmente, las URL tratan a todos los tweets de la 
+misma manera, sin importar a qué usuario pertenecen.
+
+Ahora, si quitaras el bloque collection y simplemente tuvieras resources :tweets directamente dentro de 
+resources :users, las rutas generadas para los tweets estarían anidadas bajo un usuario específico:
+
+/api/users/1/tweets/1           # muestra el tweet con id 1 del usuario con id 1
+/api/users/1/tweets             # crea un nuevo tweet para el usuario con id 1
+/api/users/1/tweets/1/stats     # obtiene estadísticas para el tweet con id 1 del usuario con id 1
+# ... y así sucesivamente para las otras acciones de tweets
+
+
+En este caso, cada ruta de tweet está claramente asociada a un usuario específico, identificado por su ID 
+en la URL.
+
+Dependiendo de la lógica de tu aplicación, una estructura puede ser más adecuada que la otra. Si quieres 
+que los tweets se gestionen de forma independiente de los usuarios en la URL (aunque en el backend aún 
+puedan estar asociados a usuarios), entonces la estructura con collection tiene sentido. Sin embargo, si 
+quieres que las URL reflejen claramente a qué usuario pertenece cada tweet, entonces deberías anidar 
+resources :tweets directamente dentro de resources :users sin el bloque collection.
+
+
+¿Qué hace member?
+member en las rutas de Rails se utiliza para definir rutas que operan sobre un miembro específico del 
+recurso. Estas rutas requieren un ID para identificar ese recurso específico.
+
+Por ejemplo, en el contexto de tu configuración de rutas:
+
+resources :users do
+  member do
+    get 'tweets(/page/:page)', to: 'tweets#index'
+    get 'tweets_and_replies(/page/:page)', to: 'tweets#tweets_and_replies'
+  end
+end
+
+Esto generaría rutas como:
+
+/api/users/1/tweets
+/api/users/1/tweets_and_replies
+
+Donde 1 es el ID del usuario específico. Estas rutas te permiten obtener los tweets o tweets y respuestas 
+de un usuario específico.
+
+¿Por qué no poner un member dentro de collection?
+Si movieras las rutas de member dentro de collection, ya no requerirías un ID de usuario en las URL, ya que
+ las rutas a nivel de collection operan sobre el conjunto completo del recurso y no sobre un miembro 
+ específico.
+
+Por lo tanto, en lugar de:
+/api/users/1/tweets
+
+Tendrías algo así:
+/api/users/tweets
+
+Esto podría ser problemático porque, sin el ID del usuario en la URL, no tendrías una manera clara de
+ determinar de qué usuario quieres obtener los tweets.
+
+Por supuesto, podrías usar current_user (proporcionado por Devise) para obtener el usuario actualmente 
+autenticado y mostrar sus tweets. Pero si quisieras ver los tweets de otros usuarios, no tendrías una forma
+ clara de hacerlo sin el ID del usuario en la URL.
+
+En resumen, member se utiliza cuando quieres operar sobre un recurso específico y necesitas identificar ese
+ recurso con un ID en la URL. collection, por otro lado, se utiliza cuando quieres operar sobre el conjunto
+  completo del recurso y no necesitas un ID específico en la URL. Dependiendo de la funcionalidad que desees, 
+  elegirás una u otra.
